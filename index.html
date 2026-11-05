@@ -1,414 +1,544 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История слова «работа»</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>История слова «работа»</title>
+  <style>
+    :root {
+      --bg: #091326;
+      --bg2: #101f3d;
+      --card: rgba(255, 255, 255, 0.08);
+      --text: #f6f1e7;
+      --muted: #b9c5dc;
+      --accent: #ffc44d;
+      --accent2: #ff8c42;
+      --line: rgba(255, 255, 255, 0.14);
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-            overflow-x: hidden;
-        }
+    * { box-sizing: border-box; }
 
-        .container {
-            scroll-snap-type: y mandatory;
-            overflow-y: scroll;
-            height: 100vh;
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 15%, rgba(50, 112, 220, .28), transparent 28%),
+        radial-gradient(circle at 85% 80%, rgba(255, 154, 66, .2), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+    }
 
-        .slide {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            scroll-snap-align: start;
-            position: relative;
-            overflow: hidden;
-        }
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .08;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
 
-        .slide::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 70%);
-            animation: pulse 8s ease-in-out infinite;
-        }
+    .presentation {
+      width: min(1200px, 94vw);
+      height: min(700px, 84vh);
+      margin: 8vh auto;
+      position: relative;
+    }
 
-        @keyframes pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
-            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.1; }
-        }
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      padding: clamp(28px, 5vw, 72px);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.025));
+      box-shadow: 0 25px 70px rgba(0, 0, 0, .36);
+      animation: show .55s ease both;
+    }
 
-        .content {
-            max-width: 900px;
-            z-index: 1;
-            animation: fadeIn 1s ease-in;
-        }
+    .slide.active { display: flex; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes show {
+      from { opacity: 0; transform: translateY(16px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-        h1 {
-            font-size: 4em;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #ffc107, #ff9800);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255,193,7,0.3);
-        }
+    .content {
+      width: 65%;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-        h2 {
-            font-size: 2.5em;
-            color: #ffc107;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px rgba(255,193,7,0.5);
-        }
+    .slide.center .content {
+      width: 100%;
+      text-align: center;
+      align-items: center;
+    }
 
-        h3 {
-            font-size: 1.8em;
-            color: #ff9800;
-            margin: 20px 0;
-        }
+    .eyebrow {
+      margin-bottom: 15px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
 
-        p {
-            font-size: 1.3em;
-            line-height: 1.8;
-            margin: 15px 0;
-            color: #e0e0e0;
-        }
+    h1, h2 {
+      margin: 0;
+      line-height: 1.05;
+      letter-spacing: -.045em;
+    }
 
-        .subtitle {
-            font-size: 1.5em;
-            color: #bbb;
-            font-style: italic;
-        }
+    h1 {
+      max-width: 850px;
+      font-size: clamp(44px, 7vw, 88px);
+    }
 
-        ul {
-            list-style: none;
-            margin: 20px 0;
-        }
+    h2 {
+      max-width: 780px;
+      font-size: clamp(36px, 5vw, 64px);
+    }
 
-        li {
-            font-size: 1.4em;
-            padding: 12px 0;
-            position: relative;
-            padding-left: 40px;
-            color: #f5f5f5;
-        }
+    .accent { color: var(--accent); }
 
-        li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: #ffc107;
-            font-weight: bold;
-            font-size: 1.5em;
-        }
+    p {
+      max-width: 690px;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 25px);
+      line-height: 1.5;
+      margin: 25px 0 0;
+    }
 
-        .highlight {
-            color: #ffc107;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255,193,7,0.4);
-        }
+    .lead {
+      max-width: 650px;
+      font-size: clamp(21px, 2.3vw, 29px);
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin: 30px 0;
-        }
+    .list {
+      display: grid;
+      gap: 12px;
+      margin: 28px 0 0;
+      padding: 0;
+      list-style: none;
+    }
 
-        .box {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid #ffc107;
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s;
-        }
+    .list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      font-size: clamp(18px, 1.9vw, 24px);
+    }
 
-        .box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(255,193,7,0.3);
-        }
+    .list li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      flex: 0 0 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 16px var(--accent);
+    }
 
-        .icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
+    .highlight {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 17px 22px;
+      border: 1px solid rgba(255,196,77,.35);
+      border-radius: 17px;
+      background: rgba(255,196,77,.11);
+      color: #fff3cf;
+      font-size: clamp(18px, 2vw, 25px);
+      font-weight: 700;
+    }
 
-        .timeline {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin: 40px 0;
-        }
+    .visual {
+      position: absolute;
+      right: 3%;
+      top: 50%;
+      width: 36%;
+      max-width: 410px;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
 
-        .timeline-item {
-            text-align: center;
-            position: relative;
-        }
+    .big-word {
+      position: absolute;
+      bottom: -44px;
+      right: -12px;
+      color: rgba(255,255,255,.035);
+      font-size: clamp(130px, 19vw, 300px);
+      font-weight: 900;
+      line-height: .8;
+      letter-spacing: -.1em;
+      user-select: none;
+    }
 
-        .timeline-item::after {
-            content: '→';
-            position: absolute;
-            right: -50px;
-            top: 20px;
-            font-size: 2em;
-            color: #ffc107;
-        }
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: min(940px, 100%);
+      margin-top: 45px;
+    }
 
-        .timeline-item:last-child::after {
-            content: '';
-        }
+    .step {
+      flex: 1;
+      min-height: 105px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      font-size: clamp(16px, 1.8vw, 23px);
+      font-weight: 700;
+    }
 
-        .robot {
-            font-size: 8em;
-            animation: bounce 2s infinite;
-        }
+    .arrow {
+      color: var(--accent);
+      font-size: 34px;
+      font-weight: bold;
+    }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
+    .languages {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+      gap: 12px;
+      width: min(620px, 100%);
+      margin-top: 30px;
+    }
 
-        .conclusion {
-            background: linear-gradient(135deg, rgba(255,193,7,0.2), rgba(255,152,0,0.2));
-            border-radius: 20px;
-            padding: 40px;
-            border: 3px solid #ffc107;
-            text-align: center;
-        }
+    .lang {
+      padding: 16px 18px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 19px;
+    }
 
-        .nav-dots {
-            position: fixed;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 100;
-        }
+    .lang b { color: var(--accent); }
 
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255,193,7,0.3);
-            margin: 15px 0;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    .quote {
+      max-width: 760px;
+      margin-top: 28px;
+      padding: 25px 28px;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 18px 18px 0;
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      font-size: clamp(20px, 2.3vw, 29px);
+      font-weight: 700;
+      line-height: 1.35;
+    }
 
-        .dot:hover, .dot.active {
-            background: #ffc107;
-            transform: scale(1.5);
-        }
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 10;
+    }
 
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5em; }
-            h2 { font-size: 1.8em; }
-            p, li { font-size: 1.1em; }
-            .grid { grid-template-columns: 1fr; }
-            .timeline { flex-direction: column; }
-            .timeline-item::after { content: '↓'; right: auto; top: auto; bottom: -40px; }
-        }
-    </style>
+    button {
+      width: 46px;
+      height: 46px;
+      cursor: pointer;
+      color: white;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(10, 22, 45, .8);
+      font-size: 24px;
+      transition: .2s ease;
+    }
+
+    button:hover {
+      background: var(--accent);
+      color: #18213a;
+      transform: translateY(-2px);
+    }
+
+    #counter {
+      min-width: 72px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 14px var(--accent);
+      transition: width .35s ease;
+      z-index: 20;
+    }
+
+    .hint {
+      position: fixed;
+      right: 25px;
+      bottom: 25px;
+      color: rgba(255,255,255,.45);
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .presentation {
+        width: 93vw;
+        height: 80vh;
+        margin: 10vh auto;
+      }
+
+      .slide { padding: 35px 26px 68px; }
+      .content { width: 100%; }
+      .visual { opacity: .18; width: 66%; right: -10%; }
+      .steps { flex-direction: column; margin-top: 25px; }
+      .step { width: 100%; min-height: auto; }
+      .arrow { transform: rotate(90deg); }
+      .languages { grid-template-columns: 1fr; }
+      .hint { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <div class="nav-dots" id="navDots"></div>
+  <div class="noise"></div>
+  <div class="progress" id="progress"></div>
 
-    <div class="container" id="container">
-        <!-- Слайд 1 -->
-        <div class="slide">
-            <div class="content">
-                <h1>История слова «работа»</h1>
-                <p class="subtitle">От рабства до любимого дела</p>
-            </div>
+  <main class="presentation">
+
+    <!-- 1 -->
+    <section class="slide center active">
+      <div class="big-word">ТРУД</div>
+      <div class="content">
+        <div class="eyebrow">Этимология слова</div>
+        <h1>История слова<br><span class="accent">«работа»</span></h1>
+        <p class="lead">Как слово о тяжёлом труде стало частью нашей обычной жизни.</p>
+        <div class="highlight">8 слайдов · история одного слова</div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide">
+      <div class="big-word">СЕЙЧАС</div>
+      <div class="content">
+        <div class="eyebrow">Значение сегодня</div>
+        <h2>Что означает<br>слово <span class="accent">сегодня</span>?</h2>
+        <p>Работа — это дело, которым человек занимается, чтобы получить результат, создать что-то полезное или заработать деньги.</p>
+        <ul class="list">
+          <li>работа врача;</li>
+          <li>работа компьютера;</li>
+          <li>домашняя работа;</li>
+          <li>работа над проектом.</li>
+        </ul>
+      </div>
+      <div class="visual">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="200" cy="200" r="155" fill="#FFC44D" fill-opacity=".1"/>
+          <circle cx="200" cy="200" r="115" stroke="#FFC44D" stroke-width="3" stroke-dasharray="9 12"/>
+          <path d="M115 175H285V275H115V175Z" fill="#18345D" stroke="#FFC44D" stroke-width="5"/>
+          <path d="M155 175V145C155 115 245 115 245 145V175" stroke="#FFC44D" stroke-width="12" stroke-linecap="round"/>
+          <path d="M145 215H255" stroke="#92B4E8" stroke-width="9" stroke-linecap="round"/>
+          <path d="M145 242H215" stroke="#92B4E8" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="290" cy="105" r="25" fill="#FF8C42"/>
+          <path d="M290 63V42M290 168V147M332 105H353M227 105H248M320 75L335 60M260 135L245 150M320 135L335 150M260 75L245 60" stroke="#FFC44D" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide">
+      <div class="big-word">РАБ</div>
+      <div class="content">
+        <div class="eyebrow">Происхождение</div>
+        <h2>Слово очень<br><span class="accent">старое</span></h2>
+        <p>«Работа» связано со старославянским словом <b style="color:#fff">«раб»</b>. В далёком прошлом оно часто означало не свободный труд, а тяжёлую обязанность и труд по принуждению.</p>
+        <div class="highlight">работа ≈ повинность, служба, тяжёлый труд</div>
+      </div>
+      <div class="visual">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M80 330H320" stroke="#FFC44D" stroke-width="7" stroke-linecap="round"/>
+          <path d="M123 330L157 164L205 225L230 330" fill="#234474" stroke="#B9C5DC" stroke-width="5"/>
+          <circle cx="170" cy="120" r="42" fill="#F3B478"/>
+          <path d="M137 116C145 64 205 62 210 111C183 95 159 97 137 116Z" fill="#422E29"/>
+          <path d="M190 205L265 126" stroke="#FFC44D" stroke-width="12" stroke-linecap="round"/>
+          <path d="M252 95L287 130" stroke="#FF8C42" stroke-width="15" stroke-linecap="round"/>
+          <path d="M286 130L303 147" stroke="#B9C5DC" stroke-width="8" stroke-linecap="round"/>
+          <path d="M114 242L65 295M219 240L274 285" stroke="#F3B478" stroke-width="13" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide center">
+      <div class="big-word">ПУТЬ</div>
+      <div class="content">
+        <div class="eyebrow">Изменение значения</div>
+        <h2>Как менялся <span class="accent">смысл</span></h2>
+        <div class="steps">
+          <div class="step">Тяжёлый<br>труд</div>
+          <div class="arrow">→</div>
+          <div class="step">Обязанность<br>и служба</div>
+          <div class="arrow">→</div>
+          <div class="step">Профессия<br>и дело</div>
+          <div class="arrow">→</div>
+          <div class="step">Действие<br>техники</div>
         </div>
+        <p>Слово постепенно стало гораздо шире: теперь оно относится и к человеку, и к машинам, и к программам.</p>
+      </div>
+    </section>
 
-        <!-- Слайд 2 -->
-        <div class="slide">
-            <div class="content">
-                <h2>Что означает сегодня</h2>
-                <div class="grid">
-                    <div class="box">
-                        <div class="icon">💼</div>
-                        <p>Работа врача</p>
-                    </div>
-                    <div class="box">
-                        <div class="icon">💻</div>
-                        <p>Работа компьютера</p>
-                    </div>
-                    <div class="box">
-                        <div class="icon">🏠</div>
-                        <p>Домашняя работа</p>
-                    </div>
-                    <div class="box">
-                        <div class="icon">📊</div>
-                        <p>Работа над проектом</p>
-                    </div>
-                </div>
-            </div>
+    <!-- 5 -->
+    <section class="slide">
+      <div class="big-word">СЛАВЯНЕ</div>
+      <div class="content">
+        <div class="eyebrow">Интересный факт</div>
+        <h2>Слово есть у многих <span class="accent">славян</span></h2>
+        <p>Похожие слова сохранились в разных славянских языках. Это говорит об их общем древнем происхождении.</p>
+        <div class="languages">
+          <div class="lang">Украинский — <b>робота</b></div>
+          <div class="lang">Белорусский — <b>работа</b></div>
+          <div class="lang">Польский — <b>robota</b></div>
+          <div class="lang">Чешский — <b>robota</b></div>
         </div>
+      </div>
+      <div class="visual">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="200" cy="200" r="138" stroke="#FFC44D" stroke-width="4"/>
+          <path d="M65 200H335M200 62C245 103 268 150 268 200C268 250 245 297 200 338C155 297 132 250 132 200C132 150 155 103 200 62Z" stroke="#B9C5DC" stroke-width="4"/>
+          <path d="M78 140H322M78 260H322" stroke="#B9C5DC" stroke-width="4"/>
+          <circle cx="142" cy="139" r="12" fill="#FF8C42"/>
+          <circle cx="227" cy="173" r="12" fill="#FFC44D"/>
+          <circle cx="259" cy="226" r="12" fill="#FF8C42"/>
+          <circle cx="170" cy="264" r="12" fill="#FFC44D"/>
+        </svg>
+      </div>
+    </section>
 
-        <!-- Слайд 3 -->
-        <div class="slide">
-            <div class="content">
-                <h2>Происхождение</h2>
-                <p style="font-size: 1.5em; margin: 30px 0;">Слово <span class="highlight">«работа»</span> связано со словом <span class="highlight">«раб»</span></p>
-                <div style="font-size: 6em; text-align: center; margin: 40px 0;">⛓️</div>
-                <p style="text-align: center;">Тяжёлый труд по принуждению</p>
-            </div>
+    <!-- 6 -->
+    <section class="slide">
+      <div class="big-word">ROBOT</div>
+      <div class="content">
+        <div class="eyebrow">Неожиданная история</div>
+        <h2>«Робот» — родственник<br>слова <span class="accent">«работа»</span></h2>
+        <p>Чешское слово <b style="color:#fff">robota</b> означает тяжёлую, подневольную работу. В 1920 году оно стало известным благодаря пьесе Карела Чапека «R.U.R.».</p>
+        <div class="quote">Роботы в пьесе — искусственные работники, созданные выполнять труд вместо людей.</div>
+        <p style="font-size:15px; margin-top:16px;">Слово для пьесы, по распространённой версии, предложил Карелу его брат — художник Йозеф Чапек.</p>
+      </div>
+      <div class="visual">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="104" y="92" width="192" height="150" rx="36" fill="#1B3A68" stroke="#FFC44D" stroke-width="6"/>
+          <path d="M200 92V56" stroke="#FFC44D" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="200" cy="43" r="14" fill="#FF8C42"/>
+          <circle cx="157" cy="157" r="18" fill="#FFC44D"/>
+          <circle cx="243" cy="157" r="18" fill="#FFC44D"/>
+          <path d="M153 203C178 221 222 221 247 203" stroke="#B9C5DC" stroke-width="8" stroke-linecap="round"/>
+          <rect x="132" y="242" width="136" height="95" rx="20" fill="#234474" stroke="#B9C5DC" stroke-width="5"/>
+          <path d="M132 266L67 314M268 266L333 314M161 337V368M239 337V368" stroke="#FFC44D" stroke-width="15" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide">
+      <div class="big-word">ВЫБОР</div>
+      <div class="content">
+        <div class="eyebrow">Почему значение изменилось</div>
+        <h2>Труд стал<br><span class="accent">выбором</span></h2>
+        <p>Со временем работа перестала означать только принуждение. Люди получили возможность выбирать профессию, получать зарплату, учиться и создавать собственные проекты.</p>
+        <ul class="list">
+          <li>дело и результат;</li>
+          <li>опыт и развитие;</li>
+          <li>деньги и самостоятельность;</li>
+          <li>цели и самореализация.</li>
+        </ul>
+      </div>
+      <div class="visual">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M68 322H332" stroke="#B9C5DC" stroke-width="5"/>
+          <rect x="106" y="156" width="188" height="133" rx="10" fill="#17345C" stroke="#FFC44D" stroke-width="6"/>
+          <rect x="128" y="177" width="144" height="84" rx="5" fill="#0A1730"/>
+          <path d="M165 322H235M200 289V322" stroke="#FFC44D" stroke-width="10" stroke-linecap="round"/>
+          <path d="M159 220L185 238L241 195" stroke="#55E5A7" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="308" cy="103" r="33" fill="#FFC44D" fill-opacity=".18"/>
+          <path d="M308 70V57M308 149V136M341 103H354M262 103H275" stroke="#FFC44D" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide center">
+      <div class="big-word">ИТОГ</div>
+      <div class="content">
+        <div class="eyebrow">Вывод</div>
+        <h2>Долгий путь<br>одного <span class="accent">слова</span></h2>
+        <div class="steps">
+          <div class="step">Тяжёлая<br>обязанность</div>
+          <div class="arrow">→</div>
+          <div class="step">Обычный<br>труд</div>
+          <div class="arrow">→</div>
+          <div class="step">Профессия<br>и любимое дело</div>
         </div>
+        <p class="lead">История слова напоминает: язык меняется вместе с жизнью людей.</p>
+      </div>
+    </section>
 
-        <!-- Слайд 4 -->
-        <div class="slide">
-            <div class="content">
-                <h2>Эволюция смысла</h2>
-                <div class="grid">
-                    <div class="box">
-                        <h3>Раньше</h3>
-                        <ul>
-                            <li>Тяжёлый труд</li>
-                            <li>Обязанность</li>
-                            <li>Служба хозяину</li>
-                        </ul>
-                    </div>
-                    <div class="box">
-                        <h3>Сейчас</h3>
-                        <ul>
-                            <li>Профессия</li>
-                            <li>Полезное дело</li>
-                            <li>Действие техники</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+  </main>
 
-        <!-- Слайд 5 -->
-        <div class="slide">
-            <div class="content">
-                <h2>Славянские языки</h2>
-                <ul style="max-width: 600px; margin: 0 auto;">
-                    <li>🇺🇦 Украинский — <span class="highlight">робота</span></li>
-                    <li>🇧🇾 Белорусский — <span class="highlight">работа</span></li>
-                    <li>🇵🇱 Польский — <span class="highlight">robota</span></li>
-                    <li>🇨🇿 Чешский — <span class="highlight">robota</span></li>
-                </ul>
-                <p style="text-align: center; margin-top: 40px; font-style: italic;">Слово появилось до разделения славянских народов</p>
-            </div>
-        </div>
+  <div class="controls">
+    <button id="prev" aria-label="Предыдущий слайд">‹</button>
+    <div id="counter">1 / 8</div>
+    <button id="next" aria-label="Следующий слайд">›</button>
+  </div>
 
-        <!-- Слайд 6 -->
-        <div class="slide">
-            <div class="content">
-                <h2>Происхождение слова «робот»</h2>
-                <div class="robot">🤖</div>
-                <p style="text-align: center;"><span class="highlight">Карел Чапек</span>, 1920 год</p>
-                <p style="text-align: center; max-width: 700px; margin: 20px auto;">Писатель придумал слово для искусственных работников, которые делали тяжёлую работу вместо людей</p>
-            </div>
-        </div>
+  <div class="hint">← → — переключение слайдов</div>
 
-        <!-- Слайд 7 -->
-        <div class="slide">
-            <div class="content">
-                <h2>Почему смысл изменился</h2>
-                <p style="text-align: center; max-width: 800px; margin: 30px auto;">Труд перестал быть принуждением. Люди получили выбор.</p>
-                <div style="display: flex; justify-content: space-around; margin: 50px 0; font-size: 3em;">
-                    <div>💰</div>
-                    <div>🎯</div>
-                    <div>📈</div>
-                    <div>💡</div>
-                    <div>❤️</div>
-                </div>
-                <p style="text-align: center; font-size: 1.5em;">Дело • Опыт • Деньги • Развитие • Цели</p>
-            </div>
-        </div>
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const counter = document.getElementById("counter");
+    const progress = document.getElementById("progress");
+    let current = 0;
 
-        <!-- Слайд 8 -->
-        <div class="slide">
-            <div class="content">
-                <div class="conclusion">
-                    <h2>Вывод</h2>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div style="font-size: 2em;">⛓️</div>
-                            <p>Обязанность</p>
-                        </div>
-                        <div class="timeline-item">
-                            <div style="font-size: 2em;">🔨</div>
-                            <p>Обычный труд</p>
-                        </div>
-                        <div class="timeline-item">
-                            <div style="font-size: 2em;">💼</div>
-                            <p>Профессия</p>
-                        </div>
-                        <div class="timeline-item">
-                            <div style="font-size: 2em;">❤️</div>
-                            <p>Любимое дело</p>
-                        </div>
-                    </div>
-                    <p style="margin-top: 40px; font-size: 1.4em; font-style: italic;">Смысл слов меняется вместе с жизнью людей</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    function renderSlide(index) {
+      current = (index + slides.length) % slides.length;
 
-    <script>
-        const container = document.getElementById('container');
-        const navDots = document.getElementById('navDots');
-        const slides = document.querySelectorAll('.slide');
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === current);
+      });
 
-        // Создаём навигационные точки
-        slides.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            if (i === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => {
-                slides[i].scrollIntoView({ behavior: 'smooth' });
-            });
-            navDots.appendChild(dot);
-        });
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+    }
 
-        // Обновляем активную точку при прокрутке
-        container.addEventListener('scroll', () => {
-            const scrollPos = container.scrollTop;
-            const dots = document.querySelectorAll('.dot');
+    document.getElementById("next").addEventListener("click", () => renderSlide(current + 1));
+    document.getElementById("prev").addEventListener("click", () => renderSlide(current - 1));
 
-            slides.forEach((slide, i) => {
-                const slideTop = slide.offsetTop;
-                const slideHeight = slide.offsetHeight;
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === " ") renderSlide(current + 1);
+      if (event.key === "ArrowLeft") renderSlide(current - 1);
+      if (event.key === "Home") renderSlide(0);
+      if (event.key === "End") renderSlide(slides.length - 1);
+    });
 
-                if (scrollPos >= slideTop - slideHeight / 3 && scrollPos < slideTop + slideHeight / 3) {
-                    dots.forEach(d => d.classList.remove('active'));
-                    dots[i].classList.add('active');
-                }
-            });
-        });
+    let touchStartX = 0;
+    document.addEventListener("touchstart", e => touchStartX = e.changedTouches[0].screenX, { passive: true });
+    document.addEventListener("touchend", e => {
+      const difference = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(difference) > 50) renderSlide(current + (difference < 0 ? 1 : -1));
+    }, { passive: true });
 
-        // Управление клавиатурой
-        document.addEventListener('keydown', (e) => {
-            const currentSlide = Math.round(container.scrollTop / window.innerHeight);
-
-            if (e.key === 'ArrowDown' && currentSlide < slides.length - 1) {
-                slides[currentSlide + 1].scrollIntoView({ behavior: 'smooth' });
-            } else if (e.key === 'ArrowUp' && currentSlide > 0) {
-                slides[currentSlide - 1].scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    </script>
+    renderSlide(0);
+  </script>
 </body>
 </html>
