@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История слова «работа»</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.1; }
+        }
+
+        .content {
+            max-width: 900px;
+            z-index: 1;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,193,7,0.3);
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #ffc107;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255,193,7,0.5);
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #ff9800;
+            margin: 20px 0;
+        }
+
+        p {
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin: 15px 0;
+            color: #e0e0e0;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #bbb;
+            font-style: italic;
+        }
+
+        ul {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        li {
+            font-size: 1.4em;
+            padding: 12px 0;
+            position: relative;
+            padding-left: 40px;
+            color: #f5f5f5;
+        }
+
+        li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #ffc107;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .highlight {
+            color: #ffc107;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255,193,7,0.4);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .box {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        .box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255,193,7,0.3);
+        }
+
+        .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .timeline-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .timeline-item::after {
+            content: '→';
+            position: absolute;
+            right: -50px;
+            top: 20px;
+            font-size: 2em;
+            color: #ffc107;
+        }
+
+        .timeline-item:last-child::after {
+            content: '';
+        }
+
+        .robot {
+            font-size: 8em;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, rgba(255,193,7,0.2), rgba(255,152,0,0.2));
+            border-radius: 20px;
+            padding: 40px;
+            border: 3px solid #ffc107;
+            text-align: center;
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,193,7,0.3);
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot:hover, .dot.active {
+            background: #ffc107;
+            transform: scale(1.5);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 1.8em; }
+            p, li { font-size: 1.1em; }
+            .grid { grid-template-columns: 1fr; }
+            .timeline { flex-direction: column; }
+            .timeline-item::after { content: '↓'; right: auto; top: auto; bottom: -40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-dots" id="navDots"></div>
+
+    <div class="container" id="container">
+        <!-- Слайд 1 -->
+        <div class="slide">
+            <div class="content">
+                <h1>История слова «работа»</h1>
+                <p class="subtitle">От рабства до любимого дела</p>
+            </div>
+        </div>
+
+        <!-- Слайд 2 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Что означает сегодня</h2>
+                <div class="grid">
+                    <div class="box">
+                        <div class="icon">💼</div>
+                        <p>Работа врача</p>
+                    </div>
+                    <div class="box">
+                        <div class="icon">💻</div>
+                        <p>Работа компьютера</p>
+                    </div>
+                    <div class="box">
+                        <div class="icon">🏠</div>
+                        <p>Домашняя работа</p>
+                    </div>
+                    <div class="box">
+                        <div class="icon">📊</div>
+                        <p>Работа над проектом</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 3 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Происхождение</h2>
+                <p style="font-size: 1.5em; margin: 30px 0;">Слово <span class="highlight">«работа»</span> связано со словом <span class="highlight">«раб»</span></p>
+                <div style="font-size: 6em; text-align: center; margin: 40px 0;">⛓️</div>
+                <p style="text-align: center;">Тяжёлый труд по принуждению</p>
+            </div>
+        </div>
+
+        <!-- Слайд 4 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Эволюция смысла</h2>
+                <div class="grid">
+                    <div class="box">
+                        <h3>Раньше</h3>
+                        <ul>
+                            <li>Тяжёлый труд</li>
+                            <li>Обязанность</li>
+                            <li>Служба хозяину</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>Сейчас</h3>
+                        <ul>
+                            <li>Профессия</li>
+                            <li>Полезное дело</li>
+                            <li>Действие техники</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 5 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Славянские языки</h2>
+                <ul style="max-width: 600px; margin: 0 auto;">
+                    <li>🇺🇦 Украинский — <span class="highlight">робота</span></li>
+                    <li>🇧🇾 Белорусский — <span class="highlight">работа</span></li>
+                    <li>🇵🇱 Польский — <span class="highlight">robota</span></li>
+                    <li>🇨🇿 Чешский — <span class="highlight">robota</span></li>
+                </ul>
+                <p style="text-align: center; margin-top: 40px; font-style: italic;">Слово появилось до разделения славянских народов</p>
+            </div>
+        </div>
+
+        <!-- Слайд 6 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Происхождение слова «робот»</h2>
+                <div class="robot">🤖</div>
+                <p style="text-align: center;"><span class="highlight">Карел Чапек</span>, 1920 год</p>
+                <p style="text-align: center; max-width: 700px; margin: 20px auto;">Писатель придумал слово для искусственных работников, которые делали тяжёлую работу вместо людей</p>
+            </div>
+        </div>
+
+        <!-- Слайд 7 -->
+        <div class="slide">
+            <div class="content">
+                <h2>Почему смысл изменился</h2>
+                <p style="text-align: center; max-width: 800px; margin: 30px auto;">Труд перестал быть принуждением. Люди получили выбор.</p>
+                <div style="display: flex; justify-content: space-around; margin: 50px 0; font-size: 3em;">
+                    <div>💰</div>
+                    <div>🎯</div>
+                    <div>📈</div>
+                    <div>💡</div>
+                    <div>❤️</div>
+                </div>
+                <p style="text-align: center; font-size: 1.5em;">Дело • Опыт • Деньги • Развитие • Цели</p>
+            </div>
+        </div>
+
+        <!-- Слайд 8 -->
+        <div class="slide">
+            <div class="content">
+                <div class="conclusion">
+                    <h2>Вывод</h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div style="font-size: 2em;">⛓️</div>
+                            <p>Обязанность</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="font-size: 2em;">🔨</div>
+                            <p>Обычный труд</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="font-size: 2em;">💼</div>
+                            <p>Профессия</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="font-size: 2em;">❤️</div>
+                            <p>Любимое дело</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 40px; font-size: 1.4em; font-style: italic;">Смысл слов меняется вместе с жизнью людей</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const navDots = document.getElementById('navDots');
+        const slides = document.querySelectorAll('.slide');
+
+        // Создаём навигационные точки
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                slides[i].scrollIntoView({ behavior: 'smooth' });
+            });
+            navDots.appendChild(dot);
+        });
+
+        // Обновляем активную точку при прокрутке
+        container.addEventListener('scroll', () => {
+            const scrollPos = container.scrollTop;
+            const dots = document.querySelectorAll('.dot');
+
+            slides.forEach((slide, i) => {
+                const slideTop = slide.offsetTop;
+                const slideHeight = slide.offsetHeight;
+
+                if (scrollPos >= slideTop - slideHeight / 3 && scrollPos < slideTop + slideHeight / 3) {
+                    dots.forEach(d => d.classList.remove('active'));
+                    dots[i].classList.add('active');
+                }
+            });
+        });
+
+        // Управление клавиатурой
+        document.addEventListener('keydown', (e) => {
+            const currentSlide = Math.round(container.scrollTop / window.innerHeight);
+
+            if (e.key === 'ArrowDown' && currentSlide < slides.length - 1) {
+                slides[currentSlide + 1].scrollIntoView({ behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp' && currentSlide > 0) {
+                slides[currentSlide - 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
