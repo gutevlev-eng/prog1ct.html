@@ -1,544 +1,908 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>История слова «работа»</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>DESERT HORIZON — 3D Driving Demo</title>
   <style>
-    :root {
-      --bg: #091326;
-      --bg2: #101f3d;
-      --card: rgba(255, 255, 255, 0.08);
-      --text: #f6f1e7;
-      --muted: #b9c5dc;
-      --accent: #ffc44d;
-      --accent2: #ff8c42;
-      --line: rgba(255, 255, 255, 0.14);
+    :root{
+      --accent:#ffb020;
+      --cyan:#54edff;
+      --glass:rgba(8,13,20,.62);
     }
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      overflow: hidden;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 18% 15%, rgba(50, 112, 220, .28), transparent 28%),
-        radial-gradient(circle at 85% 80%, rgba(255, 154, 66, .2), transparent 30%),
-        linear-gradient(135deg, var(--bg), var(--bg2));
+    *{ box-sizing:border-box; }
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#07111a;
+      color:#fff;
+      font-family:Arial,Helvetica,sans-serif;
+      user-select:none;
     }
 
-    .noise {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: .08;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    canvas{ display:block; }
+
+    #ui{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:5;
     }
 
-    .presentation {
-      width: min(1200px, 94vw);
-      height: min(700px, 84vh);
-      margin: 8vh auto;
-      position: relative;
+    #logo{
+      position:absolute;
+      top:20px;
+      left:24px;
+      letter-spacing:4px;
+      font-weight:900;
+      font-size:22px;
+      text-shadow:0 2px 16px #000;
     }
 
-    .slide {
-      display: none;
-      position: absolute;
-      inset: 0;
-      padding: clamp(28px, 5vw, 72px);
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      overflow: hidden;
-      background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.025));
-      box-shadow: 0 25px 70px rgba(0, 0, 0, .36);
-      animation: show .55s ease both;
+    #logo small{
+      display:block;
+      font-size:10px;
+      color:#ffca68;
+      letter-spacing:3px;
+      margin-top:4px;
     }
 
-    .slide.active { display: flex; }
-
-    @keyframes show {
-      from { opacity: 0; transform: translateY(16px) scale(.985); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    #speedBox{
+      position:absolute;
+      bottom:25px;
+      left:25px;
+      width:220px;
+      padding:16px 18px;
+      border:1px solid rgba(255,255,255,.18);
+      background:linear-gradient(135deg,rgba(18,27,37,.78),rgba(5,9,14,.52));
+      border-radius:16px;
+      box-shadow:0 12px 35px rgba(0,0,0,.24);
+      backdrop-filter:blur(10px);
     }
 
-    .content {
-      width: 65%;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    #speed{
+      font-size:42px;
+      line-height:40px;
+      font-weight:900;
+      letter-spacing:-2px;
     }
 
-    .slide.center .content {
-      width: 100%;
-      text-align: center;
-      align-items: center;
+    #speed span{
+      color:#a8c0d2;
+      font-size:12px;
+      letter-spacing:1px;
+      margin-left:4px;
     }
 
-    .eyebrow {
-      margin-bottom: 15px;
-      color: var(--accent);
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: .15em;
-      text-transform: uppercase;
+    #gear{
+      margin-top:10px;
+      color:#ffd16c;
+      font-size:12px;
+      font-weight:bold;
+      letter-spacing:1px;
     }
 
-    h1, h2 {
-      margin: 0;
-      line-height: 1.05;
-      letter-spacing: -.045em;
+    #nitroWrap{
+      position:absolute;
+      right:25px;
+      bottom:25px;
+      width:205px;
+      padding:14px;
+      border-radius:16px;
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,.17);
+      backdrop-filter:blur(10px);
     }
 
-    h1 {
-      max-width: 850px;
-      font-size: clamp(44px, 7vw, 88px);
+    #nitroLabel{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#bdefff;
+      font-size:12px;
+      font-weight:bold;
+      letter-spacing:1px;
+      margin-bottom:9px;
     }
 
-    h2 {
-      max-width: 780px;
-      font-size: clamp(36px, 5vw, 64px);
+    #nitroBar{
+      height:10px;
+      overflow:hidden;
+      background:rgba(255,255,255,.12);
+      border-radius:99px;
     }
 
-    .accent { color: var(--accent); }
-
-    p {
-      max-width: 690px;
-      color: var(--muted);
-      font-size: clamp(18px, 2vw, 25px);
-      line-height: 1.5;
-      margin: 25px 0 0;
+    #nitroFill{
+      width:100%;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg,#37cfff,#adf6ff);
+      box-shadow:0 0 18px #3ad9ff;
+      transition:width .1s linear;
     }
 
-    .lead {
-      max-width: 650px;
-      font-size: clamp(21px, 2.3vw, 29px);
+    #help{
+      position:absolute;
+      top:22px;
+      right:24px;
+      max-width:290px;
+      padding:13px 16px;
+      border-radius:14px;
+      background:rgba(6,12,18,.52);
+      border:1px solid rgba(255,255,255,.13);
+      color:#d3e0e9;
+      font-size:12px;
+      line-height:1.65;
+      text-align:right;
+      backdrop-filter:blur(9px);
     }
 
-    .list {
-      display: grid;
-      gap: 12px;
-      margin: 28px 0 0;
-      padding: 0;
-      list-style: none;
+    #help b{ color:#fff1c5; }
+
+    #message{
+      position:absolute;
+      left:50%;
+      top:52%;
+      transform:translate(-50%,-50%);
+      width:min(560px,90vw);
+      padding:27px;
+      text-align:center;
+      border-radius:22px;
+      background:linear-gradient(135deg,rgba(6,13,20,.86),rgba(26,15,7,.76));
+      border:1px solid rgba(255,202,104,.35);
+      box-shadow:0 20px 70px rgba(0,0,0,.45);
+      pointer-events:auto;
+      transition:.35s ease;
     }
 
-    .list li {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #fff;
-      font-size: clamp(18px, 1.9vw, 24px);
+    #message.hidden{
+      opacity:0;
+      visibility:hidden;
+      transform:translate(-50%,-45%);
     }
 
-    .list li::before {
-      content: "";
-      width: 10px;
-      height: 10px;
-      flex: 0 0 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 16px var(--accent);
+    #message h1{
+      margin:0;
+      font-size:30px;
+      letter-spacing:4px;
     }
 
-    .highlight {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 17px 22px;
-      border: 1px solid rgba(255,196,77,.35);
-      border-radius: 17px;
-      background: rgba(255,196,77,.11);
-      color: #fff3cf;
-      font-size: clamp(18px, 2vw, 25px);
-      font-weight: 700;
+    #message p{
+      color:#c8d7df;
+      line-height:1.6;
+      font-size:14px;
     }
 
-    .visual {
-      position: absolute;
-      right: 3%;
-      top: 50%;
-      width: 36%;
-      max-width: 410px;
-      transform: translateY(-50%);
-      z-index: 1;
+    button{
+      border:0;
+      padding:13px 21px;
+      border-radius:11px;
+      cursor:pointer;
+      font-weight:900;
+      letter-spacing:1px;
+      color:#17110a;
+      background:linear-gradient(135deg,#ffd36c,#ff9d24);
+      box-shadow:0 7px 22px rgba(255,151,25,.3);
     }
 
-    .big-word {
-      position: absolute;
-      bottom: -44px;
-      right: -12px;
-      color: rgba(255,255,255,.035);
-      font-size: clamp(130px, 19vw, 300px);
-      font-weight: 900;
-      line-height: .8;
-      letter-spacing: -.1em;
-      user-select: none;
+    #mobileControls{
+      display:none;
+      position:absolute;
+      inset:0;
+      pointer-events:none;
     }
 
-    .steps {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: min(940px, 100%);
-      margin-top: 45px;
+    .touch{
+      position:absolute;
+      bottom:32px;
+      width:70px;
+      height:70px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(8,15,23,.42);
+      color:#fff;
+      font-size:25px;
+      pointer-events:auto;
+      touch-action:none;
     }
 
-    .step {
-      flex: 1;
-      min-height: 105px;
-      display: grid;
-      place-items: center;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255,255,255,.06);
-      font-size: clamp(16px, 1.8vw, 23px);
-      font-weight: 700;
-    }
+    #left{ left:22px; }
+    #right{ left:104px; }
+    #gas{ right:22px; width:82px; height:82px; background:rgba(244,129,27,.38); }
+    #brake{ right:116px; }
 
-    .arrow {
-      color: var(--accent);
-      font-size: 34px;
-      font-weight: bold;
-    }
-
-    .languages {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(160px, 1fr));
-      gap: 12px;
-      width: min(620px, 100%);
-      margin-top: 30px;
-    }
-
-    .lang {
-      padding: 16px 18px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      font-size: 19px;
-    }
-
-    .lang b { color: var(--accent); }
-
-    .quote {
-      max-width: 760px;
-      margin-top: 28px;
-      padding: 25px 28px;
-      border-left: 4px solid var(--accent);
-      border-radius: 0 18px 18px 0;
-      background: rgba(255,255,255,.06);
-      color: #fff;
-      font-size: clamp(20px, 2.3vw, 29px);
-      font-weight: 700;
-      line-height: 1.35;
-    }
-
-    .controls {
-      position: fixed;
-      left: 50%;
-      bottom: 28px;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      z-index: 10;
-    }
-
-    button {
-      width: 46px;
-      height: 46px;
-      cursor: pointer;
-      color: white;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      background: rgba(10, 22, 45, .8);
-      font-size: 24px;
-      transition: .2s ease;
-    }
-
-    button:hover {
-      background: var(--accent);
-      color: #18213a;
-      transform: translateY(-2px);
-    }
-
-    #counter {
-      min-width: 72px;
-      text-align: center;
-      font-weight: 800;
-      color: var(--muted);
-    }
-
-    .progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 14px var(--accent);
-      transition: width .35s ease;
-      z-index: 20;
-    }
-
-    .hint {
-      position: fixed;
-      right: 25px;
-      bottom: 25px;
-      color: rgba(255,255,255,.45);
-      font-size: 13px;
-    }
-
-    @media (max-width: 760px) {
-      .presentation {
-        width: 93vw;
-        height: 80vh;
-        margin: 10vh auto;
-      }
-
-      .slide { padding: 35px 26px 68px; }
-      .content { width: 100%; }
-      .visual { opacity: .18; width: 66%; right: -10%; }
-      .steps { flex-direction: column; margin-top: 25px; }
-      .step { width: 100%; min-height: auto; }
-      .arrow { transform: rotate(90deg); }
-      .languages { grid-template-columns: 1fr; }
-      .hint { display: none; }
+    @media(max-width:700px){
+      #help{ display:none; }
+      #logo{ font-size:16px; left:16px; top:14px; }
+      #speedBox{ left:15px; bottom:15px; transform:scale(.83); transform-origin:left bottom; }
+      #nitroWrap{ right:14px; top:64px; bottom:auto; width:145px; }
+      #mobileControls{ display:block; }
     }
   </style>
 </head>
 <body>
-  <div class="noise"></div>
-  <div class="progress" id="progress"></div>
+  <div id="ui">
+    <div id="logo">DESERT HORIZON<small>OPEN ROAD FESTIVAL</small></div>
 
-  <main class="presentation">
+    <div id="help">
+      <b>W / ↑</b> — газ<br>
+      <b>S / ↓</b> — тормоз / задний ход<br>
+      <b>A D / ← →</b> — управление<br>
+      <b>Shift</b> — нитро<br>
+      <b>R</b> — вернуть машину на трассу
+    </div>
 
-    <!-- 1 -->
-    <section class="slide center active">
-      <div class="big-word">ТРУД</div>
-      <div class="content">
-        <div class="eyebrow">Этимология слова</div>
-        <h1>История слова<br><span class="accent">«работа»</span></h1>
-        <p class="lead">Как слово о тяжёлом труде стало частью нашей обычной жизни.</p>
-        <div class="highlight">8 слайдов · история одного слова</div>
-      </div>
-    </section>
+    <div id="speedBox">
+      <div id="speed">0 <span>KM/H</span></div>
+      <div id="gear">ПЕРЕДАЧА: N</div>
+    </div>
 
-    <!-- 2 -->
-    <section class="slide">
-      <div class="big-word">СЕЙЧАС</div>
-      <div class="content">
-        <div class="eyebrow">Значение сегодня</div>
-        <h2>Что означает<br>слово <span class="accent">сегодня</span>?</h2>
-        <p>Работа — это дело, которым человек занимается, чтобы получить результат, создать что-то полезное или заработать деньги.</p>
-        <ul class="list">
-          <li>работа врача;</li>
-          <li>работа компьютера;</li>
-          <li>домашняя работа;</li>
-          <li>работа над проектом.</li>
-        </ul>
-      </div>
-      <div class="visual">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="200" cy="200" r="155" fill="#FFC44D" fill-opacity=".1"/>
-          <circle cx="200" cy="200" r="115" stroke="#FFC44D" stroke-width="3" stroke-dasharray="9 12"/>
-          <path d="M115 175H285V275H115V175Z" fill="#18345D" stroke="#FFC44D" stroke-width="5"/>
-          <path d="M155 175V145C155 115 245 115 245 145V175" stroke="#FFC44D" stroke-width="12" stroke-linecap="round"/>
-          <path d="M145 215H255" stroke="#92B4E8" stroke-width="9" stroke-linecap="round"/>
-          <path d="M145 242H215" stroke="#92B4E8" stroke-width="9" stroke-linecap="round"/>
-          <circle cx="290" cy="105" r="25" fill="#FF8C42"/>
-          <path d="M290 63V42M290 168V147M332 105H353M227 105H248M320 75L335 60M260 135L245 150M320 135L335 150M260 75L245 60" stroke="#FFC44D" stroke-width="7" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </section>
+    <div id="nitroWrap">
+      <div id="nitroLabel"><span>НИТРО</span><span id="nitroText">100%</span></div>
+      <div id="nitroBar"><div id="nitroFill"></div></div>
+    </div>
 
-    <!-- 3 -->
-    <section class="slide">
-      <div class="big-word">РАБ</div>
-      <div class="content">
-        <div class="eyebrow">Происхождение</div>
-        <h2>Слово очень<br><span class="accent">старое</span></h2>
-        <p>«Работа» связано со старославянским словом <b style="color:#fff">«раб»</b>. В далёком прошлом оно часто означало не свободный труд, а тяжёлую обязанность и труд по принуждению.</p>
-        <div class="highlight">работа ≈ повинность, служба, тяжёлый труд</div>
-      </div>
-      <div class="visual">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M80 330H320" stroke="#FFC44D" stroke-width="7" stroke-linecap="round"/>
-          <path d="M123 330L157 164L205 225L230 330" fill="#234474" stroke="#B9C5DC" stroke-width="5"/>
-          <circle cx="170" cy="120" r="42" fill="#F3B478"/>
-          <path d="M137 116C145 64 205 62 210 111C183 95 159 97 137 116Z" fill="#422E29"/>
-          <path d="M190 205L265 126" stroke="#FFC44D" stroke-width="12" stroke-linecap="round"/>
-          <path d="M252 95L287 130" stroke="#FF8C42" stroke-width="15" stroke-linecap="round"/>
-          <path d="M286 130L303 147" stroke="#B9C5DC" stroke-width="8" stroke-linecap="round"/>
-          <path d="M114 242L65 295M219 240L274 285" stroke="#F3B478" stroke-width="13" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </section>
+    <div id="message">
+      <h1>DESERT HORIZON</h1>
+      <p>
+        Оригинальный мини-прототип гонки по пустыне.<br>
+        Мир, песок, дорожное покрытие и окружение создаются процедурно прямо в браузере.
+      </p>
+      <button id="startButton">НАЧАТЬ ПОЕЗДКУ</button>
+    </div>
 
-    <!-- 4 -->
-    <section class="slide center">
-      <div class="big-word">ПУТЬ</div>
-      <div class="content">
-        <div class="eyebrow">Изменение значения</div>
-        <h2>Как менялся <span class="accent">смысл</span></h2>
-        <div class="steps">
-          <div class="step">Тяжёлый<br>труд</div>
-          <div class="arrow">→</div>
-          <div class="step">Обязанность<br>и служба</div>
-          <div class="arrow">→</div>
-          <div class="step">Профессия<br>и дело</div>
-          <div class="arrow">→</div>
-          <div class="step">Действие<br>техники</div>
-        </div>
-        <p>Слово постепенно стало гораздо шире: теперь оно относится и к человеку, и к машинам, и к программам.</p>
-      </div>
-    </section>
-
-    <!-- 5 -->
-    <section class="slide">
-      <div class="big-word">СЛАВЯНЕ</div>
-      <div class="content">
-        <div class="eyebrow">Интересный факт</div>
-        <h2>Слово есть у многих <span class="accent">славян</span></h2>
-        <p>Похожие слова сохранились в разных славянских языках. Это говорит об их общем древнем происхождении.</p>
-        <div class="languages">
-          <div class="lang">Украинский — <b>робота</b></div>
-          <div class="lang">Белорусский — <b>работа</b></div>
-          <div class="lang">Польский — <b>robota</b></div>
-          <div class="lang">Чешский — <b>robota</b></div>
-        </div>
-      </div>
-      <div class="visual">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="200" cy="200" r="138" stroke="#FFC44D" stroke-width="4"/>
-          <path d="M65 200H335M200 62C245 103 268 150 268 200C268 250 245 297 200 338C155 297 132 250 132 200C132 150 155 103 200 62Z" stroke="#B9C5DC" stroke-width="4"/>
-          <path d="M78 140H322M78 260H322" stroke="#B9C5DC" stroke-width="4"/>
-          <circle cx="142" cy="139" r="12" fill="#FF8C42"/>
-          <circle cx="227" cy="173" r="12" fill="#FFC44D"/>
-          <circle cx="259" cy="226" r="12" fill="#FF8C42"/>
-          <circle cx="170" cy="264" r="12" fill="#FFC44D"/>
-        </svg>
-      </div>
-    </section>
-
-    <!-- 6 -->
-    <section class="slide">
-      <div class="big-word">ROBOT</div>
-      <div class="content">
-        <div class="eyebrow">Неожиданная история</div>
-        <h2>«Робот» — родственник<br>слова <span class="accent">«работа»</span></h2>
-        <p>Чешское слово <b style="color:#fff">robota</b> означает тяжёлую, подневольную работу. В 1920 году оно стало известным благодаря пьесе Карела Чапека «R.U.R.».</p>
-        <div class="quote">Роботы в пьесе — искусственные работники, созданные выполнять труд вместо людей.</div>
-        <p style="font-size:15px; margin-top:16px;">Слово для пьесы, по распространённой версии, предложил Карелу его брат — художник Йозеф Чапек.</p>
-      </div>
-      <div class="visual">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="104" y="92" width="192" height="150" rx="36" fill="#1B3A68" stroke="#FFC44D" stroke-width="6"/>
-          <path d="M200 92V56" stroke="#FFC44D" stroke-width="8" stroke-linecap="round"/>
-          <circle cx="200" cy="43" r="14" fill="#FF8C42"/>
-          <circle cx="157" cy="157" r="18" fill="#FFC44D"/>
-          <circle cx="243" cy="157" r="18" fill="#FFC44D"/>
-          <path d="M153 203C178 221 222 221 247 203" stroke="#B9C5DC" stroke-width="8" stroke-linecap="round"/>
-          <rect x="132" y="242" width="136" height="95" rx="20" fill="#234474" stroke="#B9C5DC" stroke-width="5"/>
-          <path d="M132 266L67 314M268 266L333 314M161 337V368M239 337V368" stroke="#FFC44D" stroke-width="15" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </section>
-
-    <!-- 7 -->
-    <section class="slide">
-      <div class="big-word">ВЫБОР</div>
-      <div class="content">
-        <div class="eyebrow">Почему значение изменилось</div>
-        <h2>Труд стал<br><span class="accent">выбором</span></h2>
-        <p>Со временем работа перестала означать только принуждение. Люди получили возможность выбирать профессию, получать зарплату, учиться и создавать собственные проекты.</p>
-        <ul class="list">
-          <li>дело и результат;</li>
-          <li>опыт и развитие;</li>
-          <li>деньги и самостоятельность;</li>
-          <li>цели и самореализация.</li>
-        </ul>
-      </div>
-      <div class="visual">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M68 322H332" stroke="#B9C5DC" stroke-width="5"/>
-          <rect x="106" y="156" width="188" height="133" rx="10" fill="#17345C" stroke="#FFC44D" stroke-width="6"/>
-          <rect x="128" y="177" width="144" height="84" rx="5" fill="#0A1730"/>
-          <path d="M165 322H235M200 289V322" stroke="#FFC44D" stroke-width="10" stroke-linecap="round"/>
-          <path d="M159 220L185 238L241 195" stroke="#55E5A7" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="308" cy="103" r="33" fill="#FFC44D" fill-opacity=".18"/>
-          <path d="M308 70V57M308 149V136M341 103H354M262 103H275" stroke="#FFC44D" stroke-width="7" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </section>
-
-    <!-- 8 -->
-    <section class="slide center">
-      <div class="big-word">ИТОГ</div>
-      <div class="content">
-        <div class="eyebrow">Вывод</div>
-        <h2>Долгий путь<br>одного <span class="accent">слова</span></h2>
-        <div class="steps">
-          <div class="step">Тяжёлая<br>обязанность</div>
-          <div class="arrow">→</div>
-          <div class="step">Обычный<br>труд</div>
-          <div class="arrow">→</div>
-          <div class="step">Профессия<br>и любимое дело</div>
-        </div>
-        <p class="lead">История слова напоминает: язык меняется вместе с жизнью людей.</p>
-      </div>
-    </section>
-
-  </main>
-
-  <div class="controls">
-    <button id="prev" aria-label="Предыдущий слайд">‹</button>
-    <div id="counter">1 / 8</div>
-    <button id="next" aria-label="Следующий слайд">›</button>
+    <div id="mobileControls">
+      <button class="touch" id="left">◀</button>
+      <button class="touch" id="right">▶</button>
+      <button class="touch" id="brake">▼</button>
+      <button class="touch" id="gas">▲</button>
+    </div>
   </div>
 
-  <div class="hint">← → — переключение слайдов</div>
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
 
-  <script>
-    const slides = [...document.querySelectorAll(".slide")];
-    const counter = document.getElementById("counter");
-    const progress = document.getElementById("progress");
-    let current = 0;
-
-    function renderSlide(index) {
-      current = (index + slides.length) % slides.length;
-
-      slides.forEach((slide, i) => {
-        slide.classList.toggle("active", i === current);
-      });
-
-      counter.textContent = `${current + 1} / ${slides.length}`;
-      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
-    }
-
-    document.getElementById("next").addEventListener("click", () => renderSlide(current + 1));
-    document.getElementById("prev").addEventListener("click", () => renderSlide(current - 1));
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowRight" || event.key === " ") renderSlide(current + 1);
-      if (event.key === "ArrowLeft") renderSlide(current - 1);
-      if (event.key === "Home") renderSlide(0);
-      if (event.key === "End") renderSlide(slides.length - 1);
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      powerPreference: "high-performance"
     });
 
-    let touchStartX = 0;
-    document.addEventListener("touchstart", e => touchStartX = e.changedTouches[0].screenX, { passive: true });
-    document.addEventListener("touchend", e => {
-      const difference = e.changedTouches[0].screenX - touchStartX;
-      if (Math.abs(difference) > 50) renderSlide(current + (difference < 0 ? 1 : -1));
-    }, { passive: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.16;
+    document.body.appendChild(renderer.domElement);
 
-    renderSlide(0);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x8fcdeb);
+    scene.fog = new THREE.FogExp2(0xaac7ca, 0.00115);
+
+    const camera = new THREE.PerspectiveCamera(
+      64,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1800
+    );
+
+    const clock = new THREE.Clock();
+    const keys = Object.create(null);
+
+    let started = false;
+    let speed = 0;
+    let steering = 0;
+    let nitro = 100;
+    let dustTimer = 0;
+
+    const carState = {
+      heading: 0,
+      velocity: new THREE.Vector3(),
+      position: new THREE.Vector3(0, 0.25, 30)
+    };
+
+    const speedEl = document.getElementById("speed");
+    const gearEl = document.getElementById("gear");
+    const nitroFill = document.getElementById("nitroFill");
+    const nitroText = document.getElementById("nitroText");
+
+    function canvasTexture(draw, size = 1024){
+      const c = document.createElement("canvas");
+      c.width = c.height = size;
+      const ctx = c.getContext("2d");
+      draw(ctx, size);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      return tex;
+    }
+
+    function makeSandTexture(){
+      return canvasTexture((ctx, s) => {
+        ctx.fillStyle = "#b77a37";
+        ctx.fillRect(0, 0, s, s);
+
+        for(let i = 0; i < 17000; i++){
+          const v = 120 + Math.random() * 80;
+          ctx.fillStyle = `rgba(${v + 40},${v * .72},${v * .3},${Math.random() * .22})`;
+          const x = Math.random() * s;
+          const y = Math.random() * s;
+          const r = Math.random() * 2.2;
+          ctx.fillRect(x, y, r, r);
+        }
+
+        ctx.globalAlpha = .16;
+        for(let y = 0; y < s; y += 32){
+          ctx.fillStyle = y % 64 === 0 ? "#ffd587" : "#75411d";
+          ctx.fillRect(0, y, s, 1);
+        }
+      });
+    }
+
+    function makeRoadTexture(){
+      return canvasTexture((ctx, s) => {
+        ctx.fillStyle = "#25262a";
+        ctx.fillRect(0, 0, s, s);
+
+        for(let i = 0; i < 9500; i++){
+          const g = 35 + Math.random() * 35;
+          ctx.fillStyle = `rgba(${g},${g},${g + 2},${Math.random() * .35})`;
+          ctx.fillRect(Math.random() * s, Math.random() * s, 1.5, 1.5);
+        }
+
+        ctx.fillStyle = "rgba(255,188,53,.9)";
+        ctx.fillRect(s * .49, 0, s * .02, s);
+
+        ctx.fillStyle = "rgba(255,255,255,.75)";
+        ctx.fillRect(20, 0, 8, s);
+        ctx.fillRect(s - 28, 0, 8, s);
+      });
+    }
+
+    const sandTex = makeSandTexture();
+    sandTex.repeat.set(90, 90);
+
+    const sand = new THREE.Mesh(
+      new THREE.PlaneGeometry(2300, 2300, 80, 80),
+      new THREE.MeshStandardMaterial({
+        map: sandTex,
+        roughness: 1,
+        metalness: 0,
+        color: 0xd5974e
+      })
+    );
+
+    sand.rotation.x = -Math.PI / 2;
+    sand.receiveShadow = true;
+
+    const sandPos = sand.geometry.attributes.position;
+    for(let i = 0; i < sandPos.count; i++){
+      const x = sandPos.getX(i);
+      const z = sandPos.getZ(i);
+      const y =
+        Math.sin(x * 0.012) * 4 +
+        Math.cos(z * 0.016) * 3 +
+        Math.sin((x + z) * 0.025) * 1.4;
+      sandPos.setY(i, y - 1.2);
+    }
+    sand.geometry.computeVertexNormals();
+    scene.add(sand);
+
+    const roadTex = makeRoadTexture();
+    roadTex.repeat.set(1, 32);
+
+    const road = new THREE.Mesh(
+      new THREE.PlaneGeometry(17, 1900),
+      new THREE.MeshStandardMaterial({
+        map: roadTex,
+        roughness: 0.82,
+        metalness: 0.05
+      })
+    );
+
+    road.rotation.x = -Math.PI / 2;
+    road.position.y = 0.08;
+    road.receiveShadow = true;
+    scene.add(road);
+
+    const sun = new THREE.DirectionalLight(0xffe2a9, 3.4);
+    sun.position.set(-220, 290, 110);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.left = -160;
+    sun.shadow.camera.right = 160;
+    sun.shadow.camera.top = 160;
+    sun.shadow.camera.bottom = -160;
+    sun.shadow.camera.far = 700;
+    sun.shadow.bias = -0.00018;
+    scene.add(sun);
+
+    scene.add(new THREE.HemisphereLight(0x91cfff, 0x9b5829, 2.5));
+
+    const sunDisc = new THREE.Mesh(
+      new THREE.SphereGeometry(25, 24, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffd476 })
+    );
+    sunDisc.position.set(-230, 112, -500);
+    scene.add(sunDisc);
+
+    function createMountains(){
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x80513b,
+        roughness: 1,
+        flatShading: true
+      });
+
+      for(let i = 0; i < 44; i++){
+        const angle = (i / 44) * Math.PI * 2;
+        const distance = 350 + Math.random() * 250;
+        const h = 35 + Math.random() * 125;
+        const mountain = new THREE.Mesh(
+          new THREE.ConeGeometry(30 + Math.random() * 55, h, 6 + Math.floor(Math.random() * 4)),
+          mat
+        );
+        mountain.position.set(
+          Math.cos(angle) * distance,
+          h / 2 - 3,
+          Math.sin(angle) * distance
+        );
+        mountain.rotation.y = Math.random() * Math.PI;
+        mountain.castShadow = true;
+        scene.add(mountain);
+      }
+    }
+    createMountains();
+
+    function addCactus(x, z, scale = 1){
+      const group = new THREE.Group();
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x376f47,
+        roughness: 0.9
+      });
+
+      const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(.42 * scale, .55 * scale, 5.3 * scale, 9),
+        material
+      );
+      trunk.position.y = 2.65 * scale;
+      trunk.castShadow = true;
+      group.add(trunk);
+
+      for(const side of [-1, 1]){
+        const arm = new THREE.Mesh(
+          new THREE.CylinderGeometry(.23 * scale, .31 * scale, 2.25 * scale, 8),
+          material
+        );
+        arm.rotation.z = side * Math.PI / 2;
+        arm.position.set(side * 1.05 * scale, 3.25 * scale, 0);
+        arm.castShadow = true;
+        group.add(arm);
+
+        const up = new THREE.Mesh(
+          new THREE.CylinderGeometry(.22 * scale, .26 * scale, 1.7 * scale, 8),
+          material
+        );
+        up.position.set(side * 2.0 * scale, 4.1 * scale, 0);
+        up.castShadow = true;
+        group.add(up);
+      }
+
+      group.position.set(x, 0, z);
+      group.rotation.y = Math.random() * Math.PI;
+      scene.add(group);
+    }
+
+    function addPalm(x, z, scale = 1){
+      const group = new THREE.Group();
+      const trunkMat = new THREE.MeshStandardMaterial({ color: 0x704528, roughness: 1 });
+      const leafMat = new THREE.MeshStandardMaterial({
+        color: 0x245f39,
+        roughness: .82,
+        side: THREE.DoubleSide
+      });
+
+      const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(.28 * scale, .52 * scale, 8 * scale, 8),
+        trunkMat
+      );
+      trunk.position.y = 4 * scale;
+      trunk.rotation.z = (Math.random() - .5) * .15;
+      trunk.castShadow = true;
+      group.add(trunk);
+
+      for(let i = 0; i < 9; i++){
+        const leaf = new THREE.Mesh(
+          new THREE.ConeGeometry(.78 * scale, 5.2 * scale, 3),
+          leafMat
+        );
+        leaf.rotation.z = Math.PI / 2;
+        leaf.rotation.y = (i / 9) * Math.PI * 2;
+        leaf.position.y = 8.05 * scale;
+        leaf.position.x = Math.cos(leaf.rotation.y) * 1.45 * scale;
+        leaf.position.z = Math.sin(leaf.rotation.y) * 1.45 * scale;
+        group.add(leaf);
+      }
+
+      group.position.set(x, 0, z);
+      scene.add(group);
+    }
+
+    for(let z = -850; z < 900; z += 28){
+      if(Math.random() < .74){
+        const side = Math.random() < .5 ? -1 : 1;
+        const x = side * (18 + Math.random() * 110);
+        Math.random() < .7
+          ? addCactus(x, z + Math.random() * 18, .65 + Math.random() * 1.25)
+          : addPalm(x, z + Math.random() * 18, .65 + Math.random() * .75);
+      }
+    }
+
+    function createCar(){
+      const car = new THREE.Group();
+
+      const paint = new THREE.MeshPhysicalMaterial({
+        color: 0xe92e16,
+        metalness: 0.72,
+        roughness: 0.2,
+        clearcoat: 1,
+        clearcoatRoughness: 0.12
+      });
+
+      const dark = new THREE.MeshStandardMaterial({
+        color: 0x05080b,
+        metalness: .55,
+        roughness: .26
+      });
+
+      const glass = new THREE.MeshPhysicalMaterial({
+        color: 0x071825,
+        metalness: .15,
+        roughness: .08,
+        transmission: .1,
+        transparent: true,
+        opacity: .78
+      });
+
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(2.25, .56, 4.7),
+        paint
+      );
+      body.position.y = .7;
+      body.castShadow = true;
+      car.add(body);
+
+      const hood = new THREE.Mesh(
+        new THREE.BoxGeometry(2.05, .23, 1.55),
+        paint
+      );
+      hood.position.set(0, 1.01, 1.02);
+      hood.rotation.x = -.08;
+      hood.castShadow = true;
+      car.add(hood);
+
+      const cabin = new THREE.Mesh(
+        new THREE.BoxGeometry(1.72, .72, 1.9),
+        glass
+      );
+      cabin.position.set(0, 1.25, -.48);
+      cabin.rotation.x = -.13;
+      cabin.castShadow = true;
+      car.add(cabin);
+
+      const spoiler = new THREE.Mesh(
+        new THREE.BoxGeometry(1.75, .12, .38),
+        dark
+      );
+      spoiler.position.set(0, 1.35, -2.05);
+      spoiler.castShadow = true;
+      car.add(spoiler);
+
+      const lightMat = new THREE.MeshBasicMaterial({ color: 0xfff0bc });
+      const rearMat = new THREE.MeshBasicMaterial({ color: 0xff1c0d });
+
+      for(const x of [-.78, .78]){
+        const frontLight = new THREE.Mesh(
+          new THREE.BoxGeometry(.34, .14, .08),
+          lightMat
+        );
+        frontLight.position.set(x, .82, 2.35);
+        car.add(frontLight);
+
+        const rearLight = new THREE.Mesh(
+          new THREE.BoxGeometry(.42, .15, .08),
+          rearMat
+        );
+        rearLight.position.set(x, .82, -2.35);
+        car.add(rearLight);
+      }
+
+      const wheelGeometry = new THREE.CylinderGeometry(.47, .29, 18);
+      wheelGeometry.rotateZ(Math.PI / 2);
+
+      const tire = new THREE.MeshStandardMaterial({
+        color: 0x090909,
+        roughness: .82
+      });
+
+      const rim = new THREE.MeshStandardMaterial({
+        color: 0xd3dce2,
+        metalness: .95,
+        roughness: .22
+      });
+
+      const wheels = [];
+
+      for(const x of [-1.12, 1.12]){
+        for(const z of [-1.48, 1.48]){
+          const wheel = new THREE.Group();
+
+          const tireMesh = new THREE.Mesh(wheelGeometry, tire);
+          tireMesh.castShadow = true;
+          wheel.add(tireMesh);
+
+          const rimMesh = new THREE.Mesh(
+            new THREE.CylinderGeometry(.25, .25, .305, 12),
+            rim
+          );
+          rimMesh.rotation.z = Math.PI / 2;
+          wheel.add(rimMesh);
+
+          wheel.position.set(x, .47, z);
+          car.add(wheel);
+          wheels.push(wheel);
+        }
+      }
+
+      car.userData.wheels = wheels;
+      car.position.copy(carState.position);
+      scene.add(car);
+      return car;
+    }
+
+    const car = createCar();
+
+    const dustGeometry = new THREE.BufferGeometry();
+    const dustCount = 190;
+    const dustPositions = new Float32Array(dustCount * 3);
+    const dustLife = new Float32Array(dustCount);
+
+    for(let i = 0; i < dustCount; i++){
+      dustLife[i] = Math.random();
+      dustPositions[i * 3] = 0;
+      dustPositions[i * 3 + 1] = -30;
+      dustPositions[i * 3 + 2] = 0;
+    }
+
+    dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
+
+    const dust = new THREE.Points(
+      dustGeometry,
+      new THREE.PointsMaterial({
+        color: 0xe9c387,
+        size: 1.35,
+        transparent: true,
+        opacity: .42,
+        depthWrite: false
+      })
+    );
+
+    scene.add(dust);
+
+    function emitDust(dt){
+      const p = dust.geometry.attributes.position.array;
+
+      for(let i = 0; i < dustCount; i++){
+        dustLife[i] -= dt * (0.38 + speed * .012);
+
+        if(dustLife[i] <= 0){
+          dustLife[i] = 1;
+          const backX = Math.sin(carState.heading) * -1.6;
+          const backZ = Math.cos(carState.heading) * -1.6;
+
+          p[i * 3] = car.position.x + backX + (Math.random() - .5) * 2;
+          p[i * 3 + 1] = .25 + Math.random() * .25;
+          p[i * 3 + 2] = car.position.z + backZ + (Math.random() - .5) * 1.6;
+        } else {
+          p[i * 3 + 1] += dt * .35;
+          p[i * 3] += (Math.random() - .5) * dt * .8;
+          p[i * 3 + 2] += (Math.random() - .5) * dt * .8;
+        }
+      }
+
+      dust.geometry.attributes.position.needsUpdate = true;
+      dust.material.opacity = Math.min(.48, Math.max(.05, Math.abs(speed) * .035));
+    }
+
+    function resetCar(){
+      carState.position.set(0, .25, 30);
+      carState.heading = 0;
+      speed = 0;
+      steering = 0;
+      car.position.copy(carState.position);
+      car.rotation.set(0, 0, 0);
+    }
+
+    function bindKey(code, value){
+      keys[code] = value;
+    }
+
+    window.addEventListener("keydown", e => {
+      bindKey(e.code, true);
+      if(e.code === "KeyR") resetCar();
+    });
+
+    window.addEventListener("keyup", e => bindKey(e.code, false));
+
+    function bindTouch(id, code){
+      const el = document.getElementById(id);
+      el.addEventListener("pointerdown", e => {
+        e.preventDefault();
+        keys[code] = true;
+        el.setPointerCapture?.(e.pointerId);
+      });
+      ["pointerup", "pointercancel", "pointerleave"].forEach(type => {
+        el.addEventListener(type, () => keys[code] = false);
+      });
+    }
+
+    bindTouch("left", "KeyA");
+    bindTouch("right", "KeyD");
+    bindTouch("gas", "KeyW");
+    bindTouch("brake", "KeyS");
+
+    document.getElementById("startButton").addEventListener("click", () => {
+      document.getElementById("message").classList.add("hidden");
+      started = true;
+      clock.start();
+    });
+
+    function updateCar(dt){
+      const throttle = keys.KeyW || keys.ArrowUp;
+      const brake = keys.KeyS || keys.ArrowDown;
+      const left = keys.KeyA || keys.ArrowLeft;
+      const right = keys.KeyD || keys.ArrowRight;
+      const boost = (keys.ShiftLeft || keys.ShiftRight) && nitro > 0.5 && speed > 7;
+
+      const maxSpeed = boost ? 61 : 43;
+      const accel = boost ? 30 : 19;
+
+      if(throttle) speed += accel * dt;
+      else speed -= 7.4 * dt;
+
+      if(brake){
+        if(speed > 1) speed -= 32 * dt;
+        else speed -= 13 * dt;
+      }
+
+      speed = THREE.MathUtils.clamp(speed, -12, maxSpeed);
+
+      const steeringTarget = left ? 1 : right ? -1 : 0;
+      steering = THREE.MathUtils.damp(steering, steeringTarget, 8, dt);
+
+      const turningPower = THREE.MathUtils.clamp(Math.abs(speed) / 22, .18, 1);
+      carState.heading += steering * turningPower * dt * (speed >= 0 ? 1 : -1) * 1.35;
+
+      const forward = new THREE.Vector3(
+        Math.sin(carState.heading),
+        0,
+        Math.cos(carState.heading)
+      );
+
+      carState.position.addScaledVector(forward, speed * dt);
+
+      const roadLimit = 8.8;
+      const onRoad = Math.abs(carState.position.x) < roadLimit;
+      if(!onRoad && Math.abs(speed) > 15) speed -= 14 * dt;
+
+      car.position.copy(carState.position);
+      car.rotation.y = carState.heading;
+      car.rotation.z = THREE.MathUtils.damp(
+        car.rotation.z,
+        steering * -0.1 * Math.min(Math.abs(speed) / 24, 1),
+        7,
+        dt
+      );
+      car.rotation.x = THREE.MathUtils.damp(
+        car.rotation.x,
+        throttle ? -.018 : brake ? .025 : 0,
+        5,
+        dt
+      );
+
+      for(let i = 0; i < car.userData.wheels.length; i++){
+        const wheel = car.userData.wheels[i];
+        wheel.rotation.x -= speed * dt * 2.6;
+
+        if(i >= 2){
+          wheel.rotation.y = steering * .45;
+        }
+      }
+
+      if(boost){
+        nitro = Math.max(0, nitro - 25 * dt);
+      } else {
+        nitro = Math.min(100, nitro + 6.5 * dt);
+      }
+
+      if(Math.abs(carState.position.x) > 210){
+        carState.position.x = THREE.MathUtils.clamp(carState.position.x, -210, 210);
+        speed *= -.22;
+      }
+
+      if(carState.position.z < -900) carState.position.z = 880;
+      if(carState.position.z > 900) carState.position.z = -880;
+
+      const kmh = Math.round(Math.abs(speed) * 7.15);
+      speedEl.innerHTML = `${kmh} <span>KM/H</span>`;
+
+      let gear = "N";
+      if(speed > 1) gear = boost ? "NITRO" : speed > 32 ? "6" : speed > 25 ? "5" : speed > 18 ? "4" : speed > 11 ? "3" : speed > 4 ? "2" : "1";
+      if(speed < -1) gear = "R";
+
+      gearEl.textContent = `ПЕРЕДАЧА: ${gear}`;
+      nitroFill.style.width = `${nitro}%`;
+      nitroText.textContent = `${Math.round(nitro)}%`;
+    }
+
+    function updateCamera(dt){
+      const behind = new THREE.Vector3(
+        -Math.sin(carState.heading) * 10,
+        5.3,
+        -Math.cos(carState.heading) * 10
+      );
+
+      const wanted = car.position.clone().add(behind);
+      const smooth = 1 - Math.exp(-dt * 4.4);
+      camera.position.lerp(wanted, smooth);
+
+      const lookAt = car.position.clone().add(
+        new THREE.Vector3(
+          Math.sin(carState.heading) * 14,
+          1.15,
+          Math.cos(carState.heading) * 14
+        )
+      );
+
+      camera.lookAt(lookAt);
+    }
+
+    function animate(){
+      requestAnimationFrame(animate);
+
+      const dt = Math.min(clock.getDelta(), .05);
+      const time = clock.elapsedTime;
+
+      sun.position.x = Math.sin(time * .018) * 300 - 130;
+      sun.position.z = Math.cos(time * .018) * 230 + 100;
+      sunDisc.position.x = sun.position.x * 1.55;
+      sunDisc.position.z = sun.position.z - 510;
+      sunDisc.position.y = 95 + Math.sin(time * .018) * 38;
+
+      if(started){
+        updateCar(dt);
+        updateCamera(dt);
+        emitDust(dt);
+      } else {
+        camera.position.set(0, 4.8, 42);
+        camera.lookAt(0, 1, 10);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
   </script>
 </body>
 </html>
