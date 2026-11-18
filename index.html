@@ -1,908 +1,559 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>DESERT HORIZON — 3D Driving Demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beauty Advent Calendars | 2026</title>
   <style>
-    :root{
-      --accent:#ffb020;
-      --cyan:#54edff;
-      --glass:rgba(8,13,20,.62);
+    :root {
+      color-scheme: dark;
+      --bg: #181321;
+      --panel: #241b30;
+      --ink: #fff6f9;
+      --muted: #ddcfe4;
+      --pink: #ffb6d1;
+      --gold: #ffe0a2;
+      --line: #ffffff30;
+      font-family: system-ui, sans-serif;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{
-      margin:0;
-      width:100%;
-      height:100%;
-      overflow:hidden;
-      background:#07111a;
-      color:#fff;
-      font-family:Arial,Helvetica,sans-serif;
-      user-select:none;
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 3% 3%, #6b284e 0, transparent 42%),
+        radial-gradient(ellipse at 95% 85%, #403264 0, transparent 43%),
+        var(--bg);
     }
 
-    canvas{ display:block; }
-
-    #ui{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:5;
+    button, select { font: inherit; }
+    a { color: var(--gold); text-underline-offset: .2em; }
+    button, select {
+      padding: .55rem .8rem;
+      color: var(--ink);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: .65rem;
     }
+    button:not(:disabled), select { cursor: pointer; }
+    button:hover:not(:disabled) { border-color: var(--pink); }
+    button:disabled { opacity: .45; }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
 
-    #logo{
-      position:absolute;
-      top:20px;
-      left:24px;
-      letter-spacing:4px;
-      font-weight:900;
-      font-size:22px;
-      text-shadow:0 2px 16px #000;
+    .shell { width: min(1240px, 100%); margin: auto; padding: 1rem; }
+    .top, .controls, .meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .55rem .8rem;
     }
-
-    #logo small{
-      display:block;
-      font-size:10px;
-      color:#ffca68;
-      letter-spacing:3px;
-      margin-top:4px;
+    .top { justify-content: space-between; margin-bottom: .7rem; }
+    .top strong, .kicker {
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-size: .8rem;
+      color: var(--pink);
     }
+    .meta { color: var(--muted); font-size: .85rem; }
+    progress { width: 100%; height: .45rem; accent-color: var(--pink); display: block; }
 
-    #speedBox{
-      position:absolute;
-      bottom:25px;
-      left:25px;
-      width:220px;
-      padding:16px 18px;
-      border:1px solid rgba(255,255,255,.18);
-      background:linear-gradient(135deg,rgba(18,27,37,.78),rgba(5,9,14,.52));
-      border-radius:16px;
-      box-shadow:0 12px 35px rgba(0,0,0,.24);
-      backdrop-filter:blur(10px);
+    .slide {
+      margin: .9rem 0;
+      min-height: clamp(390px, 65vh, 730px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(1rem, 3vw, 3rem);
+      padding: clamp(1.25rem, 4vw, 4rem);
+      background: linear-gradient(135deg, #2b1f39, #21182a);
+      border: 1px solid var(--line);
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 55px #0004;
     }
-
-    #speed{
-      font-size:42px;
-      line-height:40px;
-      font-weight:900;
-      letter-spacing:-2px;
+    .slide.single { grid-template-columns: minmax(0, 1fr); }
+    .content { min-width: 0; }
+    h1 {
+      margin: .35em 0 .45em;
+      font-size: clamp(2rem, 4.6vw, 4.6rem);
+      font-family: Georgia, serif;
+      font-weight: normal;
+      line-height: 1.05;
+      overflow-wrap: break-word;
     }
-
-    #speed span{
-      color:#a8c0d2;
-      font-size:12px;
-      letter-spacing:1px;
-      margin-left:4px;
+    h2 { margin: 0 0 .55rem; font-size: 1.05rem; }
+    .price {
+      display: inline-block;
+      margin: 0 0 .35rem;
+      padding: .35rem .75rem;
+      background: #ffe0a218;
+      color: var(--gold);
+      border: 1px solid #ffe0a255;
+      border-radius: 999px;
+      font-weight: 700;
     }
-
-    #gear{
-      margin-top:10px;
-      color:#ffd16c;
-      font-size:12px;
-      font-weight:bold;
-      letter-spacing:1px;
+    .facts {
+      margin: .85rem 0;
+      padding-left: 1.2em;
+      font-size: clamp(1.1rem, 2.05vw, 1.65rem);
+      line-height: 1.45;
     }
-
-    #nitroWrap{
-      position:absolute;
-      right:25px;
-      bottom:25px;
-      width:205px;
-      padding:14px;
-      border-radius:16px;
-      background:var(--glass);
-      border:1px solid rgba(255,255,255,.17);
-      backdrop-filter:blur(10px);
+    .facts li + li { margin-top: .35em; }
+    .facts li::marker { color: var(--pink); }
+    .question {
+      font-size: clamp(1rem, 1.7vw, 1.4rem);
+      border-left: 3px solid var(--pink);
+      padding-left: .75rem;
+      color: var(--muted);
     }
-
-    #nitroLabel{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      color:#bdefff;
-      font-size:12px;
-      font-weight:bold;
-      letter-spacing:1px;
-      margin-bottom:9px;
+    figure { margin: 0; width: min(100%, 390px); justify-self: center; }
+    .photo {
+      position: relative;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 4 / 5;
+      max-height: 51vh;
+      background: radial-gradient(circle at 30% 20%, #894767, #4d365e 65%, #32263f);
+      border-radius: 1rem;
+      overflow: hidden;
     }
-
-    #nitroBar{
-      height:10px;
-      overflow:hidden;
-      background:rgba(255,255,255,.12);
-      border-radius:99px;
+    .photo img { position: absolute; width: 100%; height: 100%; object-fit: contain; background: #21182a; }
+    .door {
+      font: clamp(4rem, 12vw, 9rem) Georgia, serif;
+      color: var(--gold);
+      border: 1px solid #ffe0a275;
+      border-radius: .7rem;
+      padding: .08em .27em;
     }
-
-    #nitroFill{
-      width:100%;
-      height:100%;
-      border-radius:inherit;
-      background:linear-gradient(90deg,#37cfff,#adf6ff);
-      box-shadow:0 0 18px #3ad9ff;
-      transition:width .1s linear;
+    figcaption { margin-top: .5rem; text-align: center; color: var(--muted); font-size: .82rem; }
+    .notes {
+      padding: 1rem 1.2rem;
+      margin-bottom: .9rem;
+      border: 1px solid var(--line);
+      border-radius: .9rem;
+      background: var(--panel);
     }
+    .notes p { max-width: 82ch; margin: .5rem 0; line-height: 1.6; }
+    .cue, .small { color: var(--muted); font-size: .88rem; }
+    [hidden] { display: none !important; }
+    .controls select { flex: 1 1 180px; min-width: 0; }
+    #next { background: var(--pink); color: #301829; font-weight: 700; }
+    .small { margin-top: .85rem; }
 
-    #help{
-      position:absolute;
-      top:22px;
-      right:24px;
-      max-width:290px;
-      padding:13px 16px;
-      border-radius:14px;
-      background:rgba(6,12,18,.52);
-      border:1px solid rgba(255,255,255,.13);
-      color:#d3e0e9;
-      font-size:12px;
-      line-height:1.65;
-      text-align:right;
-      backdrop-filter:blur(9px);
-    }
-
-    #help b{ color:#fff1c5; }
-
-    #message{
-      position:absolute;
-      left:50%;
-      top:52%;
-      transform:translate(-50%,-50%);
-      width:min(560px,90vw);
-      padding:27px;
-      text-align:center;
-      border-radius:22px;
-      background:linear-gradient(135deg,rgba(6,13,20,.86),rgba(26,15,7,.76));
-      border:1px solid rgba(255,202,104,.35);
-      box-shadow:0 20px 70px rgba(0,0,0,.45);
-      pointer-events:auto;
-      transition:.35s ease;
-    }
-
-    #message.hidden{
-      opacity:0;
-      visibility:hidden;
-      transform:translate(-50%,-45%);
-    }
-
-    #message h1{
-      margin:0;
-      font-size:30px;
-      letter-spacing:4px;
-    }
-
-    #message p{
-      color:#c8d7df;
-      line-height:1.6;
-      font-size:14px;
-    }
-
-    button{
-      border:0;
-      padding:13px 21px;
-      border-radius:11px;
-      cursor:pointer;
-      font-weight:900;
-      letter-spacing:1px;
-      color:#17110a;
-      background:linear-gradient(135deg,#ffd36c,#ff9d24);
-      box-shadow:0 7px 22px rgba(255,151,25,.3);
-    }
-
-    #mobileControls{
-      display:none;
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-    }
-
-    .touch{
-      position:absolute;
-      bottom:32px;
-      width:70px;
-      height:70px;
-      border-radius:50%;
-      border:1px solid rgba(255,255,255,.25);
-      background:rgba(8,15,23,.42);
-      color:#fff;
-      font-size:25px;
-      pointer-events:auto;
-      touch-action:none;
-    }
-
-    #left{ left:22px; }
-    #right{ left:104px; }
-    #gas{ right:22px; width:82px; height:82px; background:rgba(244,129,27,.38); }
-    #brake{ right:116px; }
-
-    @media(max-width:700px){
-      #help{ display:none; }
-      #logo{ font-size:16px; left:16px; top:14px; }
-      #speedBox{ left:15px; bottom:15px; transform:scale(.83); transform-origin:left bottom; }
-      #nitroWrap{ right:14px; top:64px; bottom:auto; width:145px; }
-      #mobileControls{ display:block; }
+    @media (max-width: 680px) {
+      .slide { grid-template-columns: 1fr; min-height: 0; }
+      figure { width: min(100%, 280px); }
+      .photo { max-height: 36vh; }
+      .top { align-items: flex-start; }
     }
   </style>
 </head>
 <body>
-  <div id="ui">
-    <div id="logo">DESERT HORIZON<small>OPEN ROAD FESTIVAL</small></div>
+  <main class="shell">
+    <header class="top">
+      <strong>Holiday Gift Guide · 2026</strong>
+      <div class="meta">
+        <span id="position"></span>
+        <span id="timing"></span>
+        <span>Plan: 17:00</span>
+      </div>
+    </header>
 
-    <div id="help">
-      <b>W / ↑</b> — газ<br>
-      <b>S / ↓</b> — тормоз / задний ход<br>
-      <b>A D / ← →</b> — управление<br>
-      <b>Shift</b> — нитро<br>
-      <b>R</b> — вернуть машину на трассу
-    </div>
+    <progress id="progress" aria-label="Slide progress"></progress>
+    <article id="slide" class="slide" aria-labelledby="title"></article>
 
-    <div id="speedBox">
-      <div id="speed">0 <span>KM/H</span></div>
-      <div id="gear">ПЕРЕДАЧА: N</div>
-    </div>
+    <aside class="notes" id="notes" hidden>
+      <h2>Speaker notes</h2>
+      <p id="script"></p>
+      <p class="cue" id="cue"></p>
+    </aside>
 
-    <div id="nitroWrap">
-      <div id="nitroLabel"><span>НИТРО</span><span id="nitroText">100%</span></div>
-      <div id="nitroBar"><div id="nitroFill"></div></div>
-    </div>
+    <nav class="controls" aria-label="Presentation controls">
+      <button id="prev" type="button">← Back</button>
+      <button id="next" type="button">Next →</button>
+      <select id="jump" aria-label="Go to a slide"></select>
+      <button id="toggleNotes" type="button" aria-controls="notes" aria-expanded="false">Speaker notes</button>
+      <button id="full" type="button">Full screen</button>
+    </nav>
+    <p class="small">Keys: ← Back · → Next · N Speaker notes · F Full screen</p>
+  </main>
 
-    <div id="message">
-      <h1>DESERT HORIZON</h1>
-      <p>
-        Оригинальный мини-прототип гонки по пустыне.<br>
-        Мир, песок, дорожное покрытие и окружение создаются процедурно прямо в браузере.
-      </p>
-      <button id="startButton">НАЧАТЬ ПОЕЗДКУ</button>
-    </div>
+  <script>
+    "use strict";
 
-    <div id="mobileControls">
-      <button class="touch" id="left">◀</button>
-      <button class="touch" id="right">▶</button>
-      <button class="touch" id="brake">▼</button>
-      <button class="touch" id="gas">▲</button>
-    </div>
-  </div>
+    const source = "https://www.teenvogue.com/gallery/best-beauty-advent-calendars";
 
-  <script type="module">
-    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+    // Store prices are the prices shown in the Teen Vogue article.
+    // Data: brand, title, price, facts, question, speaker notes, image ID, image number.
+    const products = [
+      [
+        "MAC Cosmetics", "24 Days of MAC Icons Advent Calendar", "$250",
+        ["24 days of MAC", "Lipsticks, liners, skin care, and false eyelashes", "Small and full-size products"],
+        "Would you open the lipstick first?",
+        "First, we have a calendar from MAC. It costs two hundred and fifty dollars in the article. There are small lipsticks and full-size products. There are also liners, skin care, and false eyelashes. Teen Vogue says the products are worth almost six hundred dollars in total. This is a gift for someone who wants to practise makeup.",
+        "6ae3acf418abd119acb6c81b", 6
+      ],
+      [
+        "Ulta", "Joybright Advent Calendar", "$22",
+        ["One of the lowest prices in the article", "Eye shadow, blush, and bronzer", "For young makeup fans"],
+        "What makeup would you try first?",
+        "This is Joybright from Ulta. It costs only twenty-two dollars. MAC costs two hundred and fifty, so this box is much cheaper. Teen Vogue likes it for young people who are new to makeup. Eye shadow gives colour to the eyelids. Blush gives colour to the cheeks. Bronzer can give the face a warm look.",
+        "6ae3acf3f1f3c33d3c39f48e", 4
+      ],
+      [
+        "Ulta", "25 Days of Beauty", "$150",
+        ["25 days of beauty", "A calendar to share", "Trade gifts with friends or family"],
+        "Who would you share this box with?",
+        "Here is another Ulta box. Its name is Twenty-Five Days of Beauty. It costs one hundred and fifty dollars in the article. Teen Vogue talks about sharing this box. You do not have to keep every gift. For example, I can keep a product I like and give another one to my friend. My friend can do the same.",
+        "6ae3acf1c23b2d74fd71d896", 2
+      ],
+      [
+        "Anua", "7-Days of Glass Skin", "$34",
+        ["7 days of Korean skin care", "A set for a full skin care routine", "A lip serum is in the box"],
+        "Would you like one week of surprises?",
+        "Anua has a seven-day box for thirty-four dollars. K-beauty means beauty products from Korea. Here, the main idea is skin care. The box has products for a full skin care routine. It even has a lip serum. Glass skin does not mean real glass. It is a name for skin that looks smooth and shiny.",
+        "6ae3acf48413979882e19f23", 1
+      ],
+      [
+        "YesStyle", "Y So Cereal Beauty Advent Calendar", "$165",
+        ["35 beauty products", "A breakfast cereal theme", "Korean brands like peripera and Arencia"],
+        "Does this look like a beauty box or a food box?",
+        "The name of this YesStyle box is Y So Cereal. The box has a breakfast cereal theme, but the gifts are beauty products. There are thirty-five products, including Korean makeup and skin care. Teen Vogue names peripera and Arencia. The box costs one hundred and sixty-five dollars. Unlike Anua, this box has products from different brands.",
+        "6ae3acf5c33fedb728e37cd7", 14
+      ],
+      [
+        "Manucurist", "Advent Calendar 2026", "$139",
+        ["Nail polish and tools", "Products to use before you paint", "For doing your nails at home"],
+        "What colour would you paint your nails?",
+        "The Manucurist box costs one hundred and thirty-nine dollars. This is a box for nails. There are products to get your nails ready, tools, and nail polish. A manicure means taking care of your hands and nails. You can do it at home with this box. Teen Vogue says this could be fun at a sleepover with friends.",
+        "6ae3acf15c61e6dd7ba2a911", 3
+      ],
+      [
+        "Lancôme", "Advent Calendar 2026", "$230",
+        ["24 products: small and full-size", "Skin care, perfume, and makeup", "Products worth $700 in total"],
+        "Would you try the perfume or the makeup first?",
+        "Lancôme has twenty-four products in this calendar. Some are small, so they are easy to take on a trip. Some are full-size. You get skin care, perfume, and makeup in one box. The price in the article is two hundred and thirty dollars. Teen Vogue says the products are worth seven hundred dollars in total.",
+        "6ae3aceda78c713cad4b5c9c", 5
+      ],
+      [
+        "Maison Margiela", "REPLICA Fragrance Advent Calendar", "$140",
+        ["A perfume calendar", "Lazy Sunday Morning, By the Fireplace, and Chasing Sunsets", "Perfumes in different sizes"],
+        "Which perfume name do you like best?",
+        "This Maison Margiela box is all about perfume. It costs one hundred and forty dollars. The perfumes have names that make you think of a place or a time. There is Lazy Sunday Morning, By the Fireplace, and Chasing Sunsets. The box has samples and other small sizes. You can try different perfumes and find a favourite.",
+        "6ae3acf1c23b2d74fd71d89c", 24
+      ],
+      [
+        "Kitsch", "Holiday Advent Calendar", "$119 on sale",
+        ["12 products for a hair fan", "All 12 products are full-size", "The article shows a sale price"],
+        "Do you like small gifts or full-size gifts?",
+        "Next is Kitsch, a calendar for someone who likes doing their hair. It has twelve products, and every product is full-size. There are no little samples in this set. Teen Vogue shows a price of one hundred and nineteen dollars on sale, down from one hundred and eighty-four. This box brings together some of the brand’s popular products.",
+        "6ae3acf3f97b1e6eb0bc9210", 19
+      ],
+      [
+        "Target", "The Ultimate Scent Advent Calendar", "$20",
+        ["12 scented gifts", "Names in the article include Athena Club and Daise", "The lowest listed price in this presentation"],
+        "Is this a good gift for a class party?",
+        "Target has a set of twelve scented gifts for twenty dollars. That is the lowest listed price in this presentation. Teen Vogue names brands like Athena Club and Daise. The article suggests it for a gift exchange. That is when people bring gifts and give them to each other. It is a way to try new smells without paying a lot.",
+        "6ae3acf7258e8c7363b5f0a9", 15
+      ],
+      [
+        "L’Occitane", "12 Days of Provençal Beauty Advent Calendar", "$110",
+        ["12 days of beauty from France", "A popular shower oil", "A small hand cream"],
+        "What would you take on a trip?",
+        "This L’Occitane set has a twelve-day theme. It costs one hundred and ten dollars. The article talks about skin care from France. Two examples are the shower oil and the small hand cream. You can use the oil in the shower. You can put the little hand cream in a bag and take it with you.",
+        "6ae3acf139f6a7c84c3d5ed7", 17
+      ],
+      [
+        "Benefit Cosmetics", "Hotel Beneville 24-Day Makeup Advent Calendar", "$168",
+        ["A hotel theme and 24 products", "Hoola Bronzer and Benetint", "Small mascaras and eyebrow products"],
+        "What would you open at this makeup hotel?",
+        "Benefit made a box with a hotel theme. It has twenty-four products and costs one hundred and sixty-eight dollars. Teen Vogue names Hoola Bronzer and Benetint. You can put Benetint on your lips and cheeks. The box also has small mascaras and products for your eyebrows. It is a fun idea for someone who likes trying popular makeup.",
+        "6ae3acf680f0f74c015fd1c0", 21
+      ],
+      [
+        "Charlotte Tilbury", "Charlotte’s Hollywood Beauty Wonderland Advent Calendar", "$220",
+        ["15 items in a red box you can keep", "Lip products, setting spray, and skin care", "A makeup bag and a face massage tool"],
+        "What would you keep in the red box?",
+        "Charlotte Tilbury’s box costs two hundred and twenty dollars. It has fifteen items in a red box you can keep. There are many lip products, plus skin care and a spray to help makeup stay in place. There is also a makeup bag and a gua sha. A gua sha is a tool you can use to massage your face.",
+        "6ae3acf08e75542b6eac4f89", 23
+      ],
+      [
+        "Victoria’s Secret", "12 Days of Bombshell Advent Calendar", "$250",
+        ["12 items with the Bombshell theme", "A full-size bottle of the original perfume", "Other Bombshell perfumes, hand cream, and a shiny body spray"],
+        "Do you like perfume with a flower smell?",
+        "Victoria’s Secret has a twelve-piece set for two hundred and fifty dollars. It is all about Bombshell, a perfume with a flower smell from peony. The original perfume comes in a full-size bottle. The article also names Bombshell Seduction and Bombshell Desire. There is a hand cream and a body spray that adds a little shine.",
+        "6ae3acf339f6a7c84c3d5edd", 11
+      ],
+      [
+        "essence", "Baked with Love Advent Calendar", "$50",
+        ["Lip products, nail polish, and eye shadow", "For someone new to makeup", "Makeup and nail colour in one box"],
+        "Would you try a new eye colour or a new nail colour?",
+        "Baked with Love is from essence. It costs fifty dollars. Teen Vogue suggests it for a younger sister who is just starting to use makeup. The box has products for the lips, nail polish, and eye shadow. I like that you can try a little makeup for your eyes or lips and also try a new colour on your nails.",
+        "6ae3acf0ca5872a5bba488bd", 8
+      ],
+      [
+        "Revolution Beauty", "2026 Advent Calendar", "$65",
+        ["Small and full-size products", "An eye shadow palette and a pink sponge", "A powder puff and small gems for face and body"],
+        "Would you try a makeup look from 2016?",
+        "This is a twenty twenty-six box, but Teen Vogue says it is fun for people who miss makeup from twenty sixteen. It costs sixty-five dollars. You get a palette with colours for the eyes, a pink makeup sponge, and a powder puff. There are even little gems for your face and body. The set has small and full-size products.",
+        "6ae3acf2258e8c7363b5f0a3", 12
+      ],
+      [
+        "Olive & June", "12 Days of Mani Magic Advent Calendar", "$50",
+        ["Press-on nails and nail stickers", "Christmas trees and Rudolph designs", "12 days of nail surprises"],
+        "Which design is better: a tree or Rudolph?",
+        "Olive and June has a twelve-day nail calendar for fifty dollars. It has press-on nails and nail stickers. Press-on nails are nails you put on top of your own nails. Some sets have Christmas trees. Others have Rudolph, the reindeer. This is different from Manucurist, where the main idea is to paint your nails with polish.",
+        "6ae3acf6e22ec282448292bc", 9
+      ],
+      [
+        "NYX Professional Makeup", "Bling Box 24 Day Holiday Advent Calendar", "$110",
+        ["24 makeup products", "Every product is full-size", "Fat Oil lip gloss is in the box"],
+        "Is a full-size lip gloss a good gift?",
+        "NYX has a twenty-four-piece makeup box. It costs one hundred and ten dollars. Every product is full-size, so you do not get little samples. One example is Fat Oil lip gloss. Lip gloss can make your lips look shiny. Like Kitsch, this box gives you only full-size products. But this box is for makeup, not for hair.",
+        "6ae3acf78413979882e19f29", 13
+      ],
+      [
+        "OPI", "OPI X M&M Holiday Advent Calendar", "$50",
+        ["12 nail polish colours", "Colours inspired by M&M’s sweets", "An easy set to share with friends"],
+        "What candy colour would you put on your nails?",
+        "OPI worked with M and M’s, the chocolate candy brand. This box has twelve candy-inspired nail polish colours. It costs fifty dollars, the same as the Olive and June box in the article. But this box is about nail polish, not press-on nails. You can keep the colours you like or share some with a friend.",
+        "6ae3acf1c33fedb728e37cd1", 10
+      ],
+      [
+        "LANEIGE", "12 Days of Wonder Korean Skincare & Lip Favorites Advent Calendar", "$149",
+        ["Korean skin care and fruity lip serums", "A face wash, a serum, and a moisturizer", "Night masks for the face, eyes, and lips"],
+        "Would you try a mask for your lips?",
+        "The Laneige calendar costs one hundred and forty-nine dollars. It has fruity lip serums, a face wash, a serum, and a cream to help skin feel less dry. Teen Vogue also names sleeping masks. These are products you can put on before bed. There are masks for the face, the eyes, and the lips. That is three different areas.",
+        "6ae3acf38413979882e19f1d", 22
+      ],
+      [
+        "Catrice", "House of Gold Advent Calendar", "$75",
+        ["24 items", "Makeup brushes and nail polish", "A mix of products and tools"],
+        "Who would you give this box to?",
+        "Catrice has a calendar called House of Gold. It costs seventy-five dollars and has twenty-four items. Teen Vogue says it has enough for a full beauty routine. It has tools, too, like makeup brushes. There is also nail polish. The article suggests this as a gift for an aunt, with the idea of a beauty day at home.",
+        "6ae3acf378516a87bcb35474", 25
+      ],
+      [
+        "TONYMOLY", "Squishmallows Advent Calendar", "$30",
+        ["A skin care calendar", "A theme based on soft toys", "One of the lower prices in the article"],
+        "What soft toy would you put on a gift box?",
+        "This box is from TONYMOLY and costs thirty dollars. Its theme is Squishmallows, the soft toys. But the calendar is a skin care calendar, not a toy calendar. Teen Vogue talks about the theme and does not give a list of the products inside. I think the theme makes this box easy to remember.",
+        "6ae3acf5aee89541c11d1a1d", 7
+      ],
+      [
+        "Urban Outfitters", "2026 12-Day Beauty Advent Calendar", "$50",
+        ["12 items from different brands", "Press-on nails, face masks, pimple patches, and scents", "Names include Billie Eilish, Ariana Grande, Starface, and Sol de Janeiro"],
+        "Which surprise would you keep for yourself?",
+        "Our last calendar is from Urban Outfitters. It has twelve items and costs fifty dollars. It has press-on nails, face masks, little stickers for spots, and nice smells. Teen Vogue names Billie Eilish, Ariana Grande, Starface, and Sol de Janeiro. This box is a good example of a mix: you do not get the same type of gift every day.",
+        "6ae3acf7a78c713cad4b5ca7", 20
+      ]
+    ];
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      powerPreference: "high-performance"
+    const productSlides = products.map((item, i) => {
+      const [brand, title, price, facts, question, speech, imageId, imageNo] = item;
+      return {
+        label: `${String(i + 1).padStart(2, "0")} · ${brand} — ${title}`,
+        kicker: `Calendar ${i + 1} of ${products.length} · ${brand}`,
+        title, price, facts, question, speech, seconds: 36,
+        cue: "Read the notes first. Then ask the question on the slide. Give the class a few seconds to think.",
+        number: String(i + 1).padStart(2, "0"),
+        photo: `https://assets.teenvogue.com/photos/${imageId}/3:4/w_748%2Cc_limit/beauty%2520advent${imageNo}.png`
+      };
     });
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.16;
-    document.body.appendChild(renderer.domElement);
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x8fcdeb);
-    scene.fog = new THREE.FogExp2(0xaac7ca, 0.00115);
-
-    const camera = new THREE.PerspectiveCamera(
-      64,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1800
-    );
-
-    const clock = new THREE.Clock();
-    const keys = Object.create(null);
-
-    let started = false;
-    let speed = 0;
-    let steering = 0;
-    let nitro = 100;
-    let dustTimer = 0;
-
-    const carState = {
-      heading: 0,
-      velocity: new THREE.Vector3(),
-      position: new THREE.Vector3(0, 0.25, 30)
-    };
-
-    const speedEl = document.getElementById("speed");
-    const gearEl = document.getElementById("gear");
-    const nitroFill = document.getElementById("nitroFill");
-    const nitroText = document.getElementById("nitroText");
-
-    function canvasTexture(draw, size = 1024){
-      const c = document.createElement("canvas");
-      c.width = c.height = size;
-      const ctx = c.getContext("2d");
-      draw(ctx, size);
-      const tex = new THREE.CanvasTexture(c);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      return tex;
-    }
-
-    function makeSandTexture(){
-      return canvasTexture((ctx, s) => {
-        ctx.fillStyle = "#b77a37";
-        ctx.fillRect(0, 0, s, s);
-
-        for(let i = 0; i < 17000; i++){
-          const v = 120 + Math.random() * 80;
-          ctx.fillStyle = `rgba(${v + 40},${v * .72},${v * .3},${Math.random() * .22})`;
-          const x = Math.random() * s;
-          const y = Math.random() * s;
-          const r = Math.random() * 2.2;
-          ctx.fillRect(x, y, r, r);
-        }
-
-        ctx.globalAlpha = .16;
-        for(let y = 0; y < s; y += 32){
-          ctx.fillStyle = y % 64 === 0 ? "#ffd587" : "#75411d";
-          ctx.fillRect(0, y, s, 1);
-        }
-      });
-    }
-
-    function makeRoadTexture(){
-      return canvasTexture((ctx, s) => {
-        ctx.fillStyle = "#25262a";
-        ctx.fillRect(0, 0, s, s);
-
-        for(let i = 0; i < 9500; i++){
-          const g = 35 + Math.random() * 35;
-          ctx.fillStyle = `rgba(${g},${g},${g + 2},${Math.random() * .35})`;
-          ctx.fillRect(Math.random() * s, Math.random() * s, 1.5, 1.5);
-        }
-
-        ctx.fillStyle = "rgba(255,188,53,.9)";
-        ctx.fillRect(s * .49, 0, s * .02, s);
-
-        ctx.fillStyle = "rgba(255,255,255,.75)";
-        ctx.fillRect(20, 0, 8, s);
-        ctx.fillRect(s - 28, 0, 8, s);
-      });
-    }
-
-    const sandTex = makeSandTexture();
-    sandTex.repeat.set(90, 90);
-
-    const sand = new THREE.Mesh(
-      new THREE.PlaneGeometry(2300, 2300, 80, 80),
-      new THREE.MeshStandardMaterial({
-        map: sandTex,
-        roughness: 1,
-        metalness: 0,
-        color: 0xd5974e
-      })
-    );
-
-    sand.rotation.x = -Math.PI / 2;
-    sand.receiveShadow = true;
-
-    const sandPos = sand.geometry.attributes.position;
-    for(let i = 0; i < sandPos.count; i++){
-      const x = sandPos.getX(i);
-      const z = sandPos.getZ(i);
-      const y =
-        Math.sin(x * 0.012) * 4 +
-        Math.cos(z * 0.016) * 3 +
-        Math.sin((x + z) * 0.025) * 1.4;
-      sandPos.setY(i, y - 1.2);
-    }
-    sand.geometry.computeVertexNormals();
-    scene.add(sand);
-
-    const roadTex = makeRoadTexture();
-    roadTex.repeat.set(1, 32);
-
-    const road = new THREE.Mesh(
-      new THREE.PlaneGeometry(17, 1900),
-      new THREE.MeshStandardMaterial({
-        map: roadTex,
-        roughness: 0.82,
-        metalness: 0.05
-      })
-    );
-
-    road.rotation.x = -Math.PI / 2;
-    road.position.y = 0.08;
-    road.receiveShadow = true;
-    scene.add(road);
-
-    const sun = new THREE.DirectionalLight(0xffe2a9, 3.4);
-    sun.position.set(-220, 290, 110);
-    sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
-    sun.shadow.camera.left = -160;
-    sun.shadow.camera.right = 160;
-    sun.shadow.camera.top = 160;
-    sun.shadow.camera.bottom = -160;
-    sun.shadow.camera.far = 700;
-    sun.shadow.bias = -0.00018;
-    scene.add(sun);
-
-    scene.add(new THREE.HemisphereLight(0x91cfff, 0x9b5829, 2.5));
-
-    const sunDisc = new THREE.Mesh(
-      new THREE.SphereGeometry(25, 24, 16),
-      new THREE.MeshBasicMaterial({ color: 0xffd476 })
-    );
-    sunDisc.position.set(-230, 112, -500);
-    scene.add(sunDisc);
-
-    function createMountains(){
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0x80513b,
-        roughness: 1,
-        flatShading: true
-      });
-
-      for(let i = 0; i < 44; i++){
-        const angle = (i / 44) * Math.PI * 2;
-        const distance = 350 + Math.random() * 250;
-        const h = 35 + Math.random() * 125;
-        const mountain = new THREE.Mesh(
-          new THREE.ConeGeometry(30 + Math.random() * 55, h, 6 + Math.floor(Math.random() * 4)),
-          mat
-        );
-        mountain.position.set(
-          Math.cos(angle) * distance,
-          h / 2 - 3,
-          Math.sin(angle) * distance
-        );
-        mountain.rotation.y = Math.random() * Math.PI;
-        mountain.castShadow = true;
-        scene.add(mountain);
+    const slides = [
+      {
+        label: "Start · What is an advent calendar?",
+        kicker: "A simple English presentation",
+        title: "Beauty Advent Calendars",
+        facts: [
+          "A little surprise each day before Christmas",
+          "Makeup, skin care, nail colour, and perfume",
+          "23 calendars from Teen Vogue’s 2026 guide"
+        ],
+        question: "What would you like to find behind the first door?",
+        speech: "Hello, everyone! Today I want to show you twenty-three beauty advent calendars. An advent calendar is a box for the days before Christmas. You usually open one little door each day. Behind the door, there is a surprise. Some calendars have chocolate. The ones in this talk have beauty gifts. You can find things like lipstick, perfume, or nail polish. Some boxes have small products that are easy to take on a trip. Other boxes have full-size products, like the ones you buy in a shop. We will look at the prices and see what makes each box different. First, what would you like to find behind the first door?",
+        cue: "Read slowly. Look up and give the class a few seconds to answer the first question.",
+        seconds: 60,
+        photo: "https://assets.teenvogue.com/photos/6aeb562b474fb85be6607a1a/16:9/w_1280,c_limit/AdventCalendar%20_Giftguide%20(1).jpg",
+        number: "✦"
+      },
+      ...productSlides,
+      {
+        label: "Class quiz",
+        kicker: "Class quiz · Think, then answer",
+        title: "Do You Remember?",
+        facts: [
+          "1. Which box costs just $20?",
+          "2. Which box has 35 beauty products?",
+          "3. Which nail polish box has a candy theme?"
+        ],
+        question: "Bonus: You have $50. Which gift do you choose, and why?",
+        speech: "Now let’s play a short quiz. First: Which box costs just twenty dollars? The answer is Target’s Ultimate Scent Calendar. Second: Which box has thirty-five beauty products? It is Y So Cereal from YesStyle. Third: Which nail polish box has a candy theme? That is the OPI and M and M’s box. Now think about the last question. You have fifty dollars. Which gift do you choose, and why? You can say, ‘I choose the Target box because I like perfume,’ or ‘I choose Olive and June because I like the Christmas nails.’",
+        cue: "Pause for about 8 seconds after each quiz question before you read its answer. For the bonus question, take one or two short answers from the class.",
+        seconds: 90
+      },
+      {
+        label: "Final slide · My gift picks",
+        kicker: "Final slide · Thank you!",
+        title: "A Gift for Different People",
+        facts: [
+          "Low price: Target ($20)",
+          "Full-size makeup: NYX ($110)",
+          "Nail art: Olive & June ($50)",
+          "My idea: choose a box with things the person likes."
+        ],
+        question: "Which calendar is your favourite?",
+        speech: "To finish, there is a different box for each kind of gift. For a low price, I would choose Target. For someone who wants full-size makeup, I would choose NYX. For a friend who likes Christmas nail art, I would choose Olive and June. The most expensive box is not always the best gift. I think the best gift is a box with things the person likes and will use. Thank you for listening!",
+        cue: "End by asking the class to name one favourite.",
+        seconds: 42,
+        source: true
       }
+    ];
+
+    const get = id => document.getElementById(id);
+    const slideEl = get("slide");
+    const jump = get("jump");
+    let index = 0;
+
+    function node(tag, text, className) {
+      const el = document.createElement(tag);
+      if (text != null) el.textContent = text;
+      if (className) el.className = className;
+      return el;
     }
-    createMountains();
 
-    function addCactus(x, z, scale = 1){
-      const group = new THREE.Group();
-      const material = new THREE.MeshStandardMaterial({
-        color: 0x376f47,
-        roughness: 0.9
-      });
+    function clock(seconds) {
+      return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+    }
 
-      const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(.42 * scale, .55 * scale, 5.3 * scale, 9),
-        material
-      );
-      trunk.position.y = 2.65 * scale;
-      trunk.castShadow = true;
-      group.add(trunk);
+    let elapsed = 0;
+    const startTimes = slides.map(slide => {
+      const start = elapsed;
+      elapsed += slide.seconds;
+      return start;
+    });
 
-      for(const side of [-1, 1]){
-        const arm = new THREE.Mesh(
-          new THREE.CylinderGeometry(.23 * scale, .31 * scale, 2.25 * scale, 8),
-          material
-        );
-        arm.rotation.z = side * Math.PI / 2;
-        arm.position.set(side * 1.05 * scale, 3.25 * scale, 0);
-        arm.castShadow = true;
-        group.add(arm);
+    slides.forEach((slide, i) => {
+      const option = node("option", slide.label);
+      option.value = String(i);
+      jump.append(option);
+    });
 
-        const up = new THREE.Mesh(
-          new THREE.CylinderGeometry(.22 * scale, .26 * scale, 1.7 * scale, 8),
-          material
-        );
-        up.position.set(side * 2.0 * scale, 4.1 * scale, 0);
-        up.castShadow = true;
-        group.add(up);
+    function render() {
+      const slide = slides[index];
+      const content = node("div", null, "content");
+      content.append(node("div", slide.kicker, "kicker"));
+
+      const heading = node("h1", slide.title);
+      heading.id = "title";
+      content.append(heading);
+
+      if (slide.price) content.append(node("p", `${slide.price} · US price in the article`, "price"));
+
+      const list = node("ul", null, "facts");
+      slide.facts.forEach(fact => list.append(node("li", fact)));
+      content.append(list, node("p", slide.question, "question"));
+
+      if (slide.source) {
+        const credit = node("p", "Source: ", "small");
+        const link = node("a", "Kara Nesvig’s 2026 beauty advent calendar guide · Teen Vogue");
+        link.href = source;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        credit.append(link, ". Prices can change.");
+        content.append(credit);
       }
 
-      group.position.set(x, 0, z);
-      group.rotation.y = Math.random() * Math.PI;
-      scene.add(group);
-    }
+      slideEl.classList.toggle("single", !slide.photo);
+      slideEl.replaceChildren(content);
 
-    function addPalm(x, z, scale = 1){
-      const group = new THREE.Group();
-      const trunkMat = new THREE.MeshStandardMaterial({ color: 0x704528, roughness: 1 });
-      const leafMat = new THREE.MeshStandardMaterial({
-        color: 0x245f39,
-        roughness: .82,
-        side: THREE.DoubleSide
-      });
+      if (slide.photo) {
+        const figure = node("figure");
+        const photo = node("div", null, "photo");
+        const door = node("div", slide.number, "door");
+        door.setAttribute("aria-hidden", "true");
 
-      const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(.28 * scale, .52 * scale, 8 * scale, 8),
-        trunkMat
-      );
-      trunk.position.y = 4 * scale;
-      trunk.rotation.z = (Math.random() - .5) * .15;
-      trunk.castShadow = true;
-      group.add(trunk);
+        const image = node("img");
+        image.alt = slide.price ? `Product photo: ${slide.title}` : "Beauty advent calendars from Teen Vogue";
+        image.addEventListener("error", () => {
+          image.remove();
+          caption.textContent = "Product image not available offline.";
+        }, { once: true });
 
-      for(let i = 0; i < 9; i++){
-        const leaf = new THREE.Mesh(
-          new THREE.ConeGeometry(.78 * scale, 5.2 * scale, 3),
-          leafMat
-        );
-        leaf.rotation.z = Math.PI / 2;
-        leaf.rotation.y = (i / 9) * Math.PI * 2;
-        leaf.position.y = 8.05 * scale;
-        leaf.position.x = Math.cos(leaf.rotation.y) * 1.45 * scale;
-        leaf.position.z = Math.sin(leaf.rotation.y) * 1.45 * scale;
-        group.add(leaf);
+        const caption = node("figcaption", "Image from Teen Vogue");
+        photo.append(door, image);
+        figure.append(photo, caption);
+        slideEl.append(figure);
+        image.src = slide.photo;
       }
 
-      group.position.set(x, 0, z);
-      scene.add(group);
+      get("script").textContent = slide.speech;
+      get("cue").textContent = slide.cue;
+      get("position").textContent = `Slide ${index + 1} / ${slides.length}`;
+      get("timing").textContent =
+        `${clock(slide.seconds)} to speak · ${clock(startTimes[index])}–${clock(startTimes[index] + slide.seconds)}`;
+      get("progress").max = slides.length;
+      get("progress").value = index + 1;
+
+      jump.value = String(index);
+      get("prev").disabled = index === 0;
+      get("next").disabled = index === slides.length - 1;
     }
 
-    for(let z = -850; z < 900; z += 28){
-      if(Math.random() < .74){
-        const side = Math.random() < .5 ? -1 : 1;
-        const x = side * (18 + Math.random() * 110);
-        Math.random() < .7
-          ? addCactus(x, z + Math.random() * 18, .65 + Math.random() * 1.25)
-          : addPalm(x, z + Math.random() * 18, .65 + Math.random() * .75);
-      }
+    function go(to) {
+      const target = Math.max(0, Math.min(slides.length - 1, to));
+      if (index === target) return;
+      index = target;
+      render();
+      window.scrollTo(0, 0);
     }
 
-    function createCar(){
-      const car = new THREE.Group();
-
-      const paint = new THREE.MeshPhysicalMaterial({
-        color: 0xe92e16,
-        metalness: 0.72,
-        roughness: 0.2,
-        clearcoat: 1,
-        clearcoatRoughness: 0.12
-      });
-
-      const dark = new THREE.MeshStandardMaterial({
-        color: 0x05080b,
-        metalness: .55,
-        roughness: .26
-      });
-
-      const glass = new THREE.MeshPhysicalMaterial({
-        color: 0x071825,
-        metalness: .15,
-        roughness: .08,
-        transmission: .1,
-        transparent: true,
-        opacity: .78
-      });
-
-      const body = new THREE.Mesh(
-        new THREE.BoxGeometry(2.25, .56, 4.7),
-        paint
-      );
-      body.position.y = .7;
-      body.castShadow = true;
-      car.add(body);
-
-      const hood = new THREE.Mesh(
-        new THREE.BoxGeometry(2.05, .23, 1.55),
-        paint
-      );
-      hood.position.set(0, 1.01, 1.02);
-      hood.rotation.x = -.08;
-      hood.castShadow = true;
-      car.add(hood);
-
-      const cabin = new THREE.Mesh(
-        new THREE.BoxGeometry(1.72, .72, 1.9),
-        glass
-      );
-      cabin.position.set(0, 1.25, -.48);
-      cabin.rotation.x = -.13;
-      cabin.castShadow = true;
-      car.add(cabin);
-
-      const spoiler = new THREE.Mesh(
-        new THREE.BoxGeometry(1.75, .12, .38),
-        dark
-      );
-      spoiler.position.set(0, 1.35, -2.05);
-      spoiler.castShadow = true;
-      car.add(spoiler);
-
-      const lightMat = new THREE.MeshBasicMaterial({ color: 0xfff0bc });
-      const rearMat = new THREE.MeshBasicMaterial({ color: 0xff1c0d });
-
-      for(const x of [-.78, .78]){
-        const frontLight = new THREE.Mesh(
-          new THREE.BoxGeometry(.34, .14, .08),
-          lightMat
-        );
-        frontLight.position.set(x, .82, 2.35);
-        car.add(frontLight);
-
-        const rearLight = new THREE.Mesh(
-          new THREE.BoxGeometry(.42, .15, .08),
-          rearMat
-        );
-        rearLight.position.set(x, .82, -2.35);
-        car.add(rearLight);
-      }
-
-      const wheelGeometry = new THREE.CylinderGeometry(.47, .29, 18);
-      wheelGeometry.rotateZ(Math.PI / 2);
-
-      const tire = new THREE.MeshStandardMaterial({
-        color: 0x090909,
-        roughness: .82
-      });
-
-      const rim = new THREE.MeshStandardMaterial({
-        color: 0xd3dce2,
-        metalness: .95,
-        roughness: .22
-      });
-
-      const wheels = [];
-
-      for(const x of [-1.12, 1.12]){
-        for(const z of [-1.48, 1.48]){
-          const wheel = new THREE.Group();
-
-          const tireMesh = new THREE.Mesh(wheelGeometry, tire);
-          tireMesh.castShadow = true;
-          wheel.add(tireMesh);
-
-          const rimMesh = new THREE.Mesh(
-            new THREE.CylinderGeometry(.25, .25, .305, 12),
-            rim
-          );
-          rimMesh.rotation.z = Math.PI / 2;
-          wheel.add(rimMesh);
-
-          wheel.position.set(x, .47, z);
-          car.add(wheel);
-          wheels.push(wheel);
-        }
-      }
-
-      car.userData.wheels = wheels;
-      car.position.copy(carState.position);
-      scene.add(car);
-      return car;
+    function toggleNotes() {
+      const notes = get("notes");
+      notes.hidden = !notes.hidden;
+      get("toggleNotes").setAttribute("aria-expanded", String(!notes.hidden));
     }
 
-    const car = createCar();
-
-    const dustGeometry = new THREE.BufferGeometry();
-    const dustCount = 190;
-    const dustPositions = new Float32Array(dustCount * 3);
-    const dustLife = new Float32Array(dustCount);
-
-    for(let i = 0; i < dustCount; i++){
-      dustLife[i] = Math.random();
-      dustPositions[i * 3] = 0;
-      dustPositions[i * 3 + 1] = -30;
-      dustPositions[i * 3 + 2] = 0;
-    }
-
-    dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
-
-    const dust = new THREE.Points(
-      dustGeometry,
-      new THREE.PointsMaterial({
-        color: 0xe9c387,
-        size: 1.35,
-        transparent: true,
-        opacity: .42,
-        depthWrite: false
-      })
-    );
-
-    scene.add(dust);
-
-    function emitDust(dt){
-      const p = dust.geometry.attributes.position.array;
-
-      for(let i = 0; i < dustCount; i++){
-        dustLife[i] -= dt * (0.38 + speed * .012);
-
-        if(dustLife[i] <= 0){
-          dustLife[i] = 1;
-          const backX = Math.sin(carState.heading) * -1.6;
-          const backZ = Math.cos(carState.heading) * -1.6;
-
-          p[i * 3] = car.position.x + backX + (Math.random() - .5) * 2;
-          p[i * 3 + 1] = .25 + Math.random() * .25;
-          p[i * 3 + 2] = car.position.z + backZ + (Math.random() - .5) * 1.6;
+    async function toggleFull() {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
         } else {
-          p[i * 3 + 1] += dt * .35;
-          p[i * 3] += (Math.random() - .5) * dt * .8;
-          p[i * 3 + 2] += (Math.random() - .5) * dt * .8;
+          await document.documentElement.requestFullscreen();
         }
+      } catch {
+        // Some browsers do not allow fullscreen for local files.
       }
-
-      dust.geometry.attributes.position.needsUpdate = true;
-      dust.material.opacity = Math.min(.48, Math.max(.05, Math.abs(speed) * .035));
     }
 
-    function resetCar(){
-      carState.position.set(0, .25, 30);
-      carState.heading = 0;
-      speed = 0;
-      steering = 0;
-      car.position.copy(carState.position);
-      car.rotation.set(0, 0, 0);
-    }
+    get("prev").addEventListener("click", () => go(index - 1));
+    get("next").addEventListener("click", () => go(index + 1));
+    jump.addEventListener("change", () => go(Number(jump.value)));
+    get("toggleNotes").addEventListener("click", toggleNotes);
+    get("full").addEventListener("click", toggleFull);
+    get("full").hidden = !document.fullscreenEnabled;
 
-    function bindKey(code, value){
-      keys[code] = value;
-    }
-
-    window.addEventListener("keydown", e => {
-      bindKey(e.code, true);
-      if(e.code === "KeyR") resetCar();
+    document.addEventListener("fullscreenchange", () => {
+      get("full").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";
     });
 
-    window.addEventListener("keyup", e => bindKey(e.code, false));
+    document.addEventListener("keydown", event => {
+      if (event.altKey || event.ctrlKey || event.metaKey ||
+          event.target.closest("input, textarea, select, [contenteditable]")) return;
 
-    function bindTouch(id, code){
-      const el = document.getElementById(id);
-      el.addEventListener("pointerdown", e => {
-        e.preventDefault();
-        keys[code] = true;
-        el.setPointerCapture?.(e.pointerId);
-      });
-      ["pointerup", "pointercancel", "pointerleave"].forEach(type => {
-        el.addEventListener(type, () => keys[code] = false);
-      });
-    }
-
-    bindTouch("left", "KeyA");
-    bindTouch("right", "KeyD");
-    bindTouch("gas", "KeyW");
-    bindTouch("brake", "KeyS");
-
-    document.getElementById("startButton").addEventListener("click", () => {
-      document.getElementById("message").classList.add("hidden");
-      started = true;
-      clock.start();
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
+        go(index + (event.key === "ArrowRight" ? 1 : -1));
+      } else if (event.key.toLowerCase() === "n") {
+        toggleNotes();
+      } else if (event.key.toLowerCase() === "f" && document.fullscreenEnabled) {
+        toggleFull();
+      }
     });
 
-    function updateCar(dt){
-      const throttle = keys.KeyW || keys.ArrowUp;
-      const brake = keys.KeyS || keys.ArrowDown;
-      const left = keys.KeyA || keys.ArrowLeft;
-      const right = keys.KeyD || keys.ArrowRight;
-      const boost = (keys.ShiftLeft || keys.ShiftRight) && nitro > 0.5 && speed > 7;
-
-      const maxSpeed = boost ? 61 : 43;
-      const accel = boost ? 30 : 19;
-
-      if(throttle) speed += accel * dt;
-      else speed -= 7.4 * dt;
-
-      if(brake){
-        if(speed > 1) speed -= 32 * dt;
-        else speed -= 13 * dt;
-      }
-
-      speed = THREE.MathUtils.clamp(speed, -12, maxSpeed);
-
-      const steeringTarget = left ? 1 : right ? -1 : 0;
-      steering = THREE.MathUtils.damp(steering, steeringTarget, 8, dt);
-
-      const turningPower = THREE.MathUtils.clamp(Math.abs(speed) / 22, .18, 1);
-      carState.heading += steering * turningPower * dt * (speed >= 0 ? 1 : -1) * 1.35;
-
-      const forward = new THREE.Vector3(
-        Math.sin(carState.heading),
-        0,
-        Math.cos(carState.heading)
-      );
-
-      carState.position.addScaledVector(forward, speed * dt);
-
-      const roadLimit = 8.8;
-      const onRoad = Math.abs(carState.position.x) < roadLimit;
-      if(!onRoad && Math.abs(speed) > 15) speed -= 14 * dt;
-
-      car.position.copy(carState.position);
-      car.rotation.y = carState.heading;
-      car.rotation.z = THREE.MathUtils.damp(
-        car.rotation.z,
-        steering * -0.1 * Math.min(Math.abs(speed) / 24, 1),
-        7,
-        dt
-      );
-      car.rotation.x = THREE.MathUtils.damp(
-        car.rotation.x,
-        throttle ? -.018 : brake ? .025 : 0,
-        5,
-        dt
-      );
-
-      for(let i = 0; i < car.userData.wheels.length; i++){
-        const wheel = car.userData.wheels[i];
-        wheel.rotation.x -= speed * dt * 2.6;
-
-        if(i >= 2){
-          wheel.rotation.y = steering * .45;
-        }
-      }
-
-      if(boost){
-        nitro = Math.max(0, nitro - 25 * dt);
-      } else {
-        nitro = Math.min(100, nitro + 6.5 * dt);
-      }
-
-      if(Math.abs(carState.position.x) > 210){
-        carState.position.x = THREE.MathUtils.clamp(carState.position.x, -210, 210);
-        speed *= -.22;
-      }
-
-      if(carState.position.z < -900) carState.position.z = 880;
-      if(carState.position.z > 900) carState.position.z = -880;
-
-      const kmh = Math.round(Math.abs(speed) * 7.15);
-      speedEl.innerHTML = `${kmh} <span>KM/H</span>`;
-
-      let gear = "N";
-      if(speed > 1) gear = boost ? "NITRO" : speed > 32 ? "6" : speed > 25 ? "5" : speed > 18 ? "4" : speed > 11 ? "3" : speed > 4 ? "2" : "1";
-      if(speed < -1) gear = "R";
-
-      gearEl.textContent = `ПЕРЕДАЧА: ${gear}`;
-      nitroFill.style.width = `${nitro}%`;
-      nitroText.textContent = `${Math.round(nitro)}%`;
-    }
-
-    function updateCamera(dt){
-      const behind = new THREE.Vector3(
-        -Math.sin(carState.heading) * 10,
-        5.3,
-        -Math.cos(carState.heading) * 10
-      );
-
-      const wanted = car.position.clone().add(behind);
-      const smooth = 1 - Math.exp(-dt * 4.4);
-      camera.position.lerp(wanted, smooth);
-
-      const lookAt = car.position.clone().add(
-        new THREE.Vector3(
-          Math.sin(carState.heading) * 14,
-          1.15,
-          Math.cos(carState.heading) * 14
-        )
-      );
-
-      camera.lookAt(lookAt);
-    }
-
-    function animate(){
-      requestAnimationFrame(animate);
-
-      const dt = Math.min(clock.getDelta(), .05);
-      const time = clock.elapsedTime;
-
-      sun.position.x = Math.sin(time * .018) * 300 - 130;
-      sun.position.z = Math.cos(time * .018) * 230 + 100;
-      sunDisc.position.x = sun.position.x * 1.55;
-      sunDisc.position.z = sun.position.z - 510;
-      sunDisc.position.y = 95 + Math.sin(time * .018) * 38;
-
-      if(started){
-        updateCar(dt);
-        updateCamera(dt);
-        emitDust(dt);
-      } else {
-        camera.position.set(0, 4.8, 42);
-        camera.lookAt(0, 1, 10);
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    animate();
+    render();
   </script>
 </body>
 </html>
